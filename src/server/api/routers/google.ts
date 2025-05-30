@@ -46,7 +46,11 @@ const getLatLng = async (address: string) => {
 };
 
 const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
-  const allResults: any[] = [];
+  const allResults: {
+    name?: string;
+    vicinity?: string;
+    type: string;
+  }[] = [];
   for (const type of types) {
     const res = await client.placesNearby({
       params: {
