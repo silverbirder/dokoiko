@@ -1,0 +1,1 @@
+CREATE INDEX "dokoiko_name_idx" ON "dokoiko_post" USING btree ("name");

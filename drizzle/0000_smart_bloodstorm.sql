@@ -5,4 +5,3 @@ CREATE TABLE "dokoiko_post" (
 	"updatedAt" timestamp with time zone
 );
 --> statement-breakpoint
-CREATE INDEX "name_idx" ON "dokoiko_post" USING btree ("name");
