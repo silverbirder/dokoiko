@@ -1,5 +1,5 @@
 import { api, HydrateClient } from "@/trpc/server";
-
+import { MapCaller } from "@/components";
 type Props = {
   searchParams?: Promise<{
     address?: string;
@@ -52,6 +52,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
         ) : (
           <p>住所を入力して検索してください。</p>
         )}
+        <MapCaller />
       </main>
     </HydrateClient>
   );
