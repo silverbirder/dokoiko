@@ -10,7 +10,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
   const searchParams = await _searchParams;
   const address = searchParams?.address ?? "";
   const hello = searchParams
-    ? await api.google.hello({ address }).catch(() => null)
+    ? await api.yahoo.hello({ address }).catch(() => null)
     : null;
 
   return (
@@ -40,14 +40,10 @@ export default async function Home({ searchParams: _searchParams }: Props) {
         </form>
         {hello ? (
           <>
-            <p>📍 緯度: {hello.lat}</p>
-            <p>📍 経度: {hello.lng}</p>
             <h2 className="mt-4 text-xl font-bold">近くのレストラン:</h2>
             <ul className="mt-2 list-disc pl-6">
               {hello.results.map((result, index) => (
-                <li key={index}>
-                  {result.name} - {result.vicinity} ({result.type})
-                </li>
+                <li key={index}>{result.name}</li>
               ))}
             </ul>
           </>
