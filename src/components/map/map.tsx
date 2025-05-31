@@ -17,7 +17,7 @@ type Props = {
 export const Map = ({ position }: Props) => {
   return (
     <MapContainer
-      className="h-screen"
+      className="h-full w-full"
       center={position ?? [51.505, -0.09]}
       zoom={13}
       scrollWheelZoom={false}
