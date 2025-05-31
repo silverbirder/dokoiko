@@ -11,17 +11,49 @@ export const googleRouter = createTRPCRouter({
     .input(z.object({ address: z.string() }))
     .query(async ({ input }) => {
       const { address } = input;
-      const location = await getLatLng(address);
-      if (!location) {
+      if (!address) {
         return null;
       }
-      const { lat, lng } = location;
-      console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
-      const allResults = await getPlacesNearby(lat, lng, [
-        "restaurant",
-        "shopping_mall",
-      ]);
-      console.log(`Found ${allResults.length} nearby places`);
+      // const location = await getLatLng(address);
+      // if (!location) {
+      //   return null;
+      // }
+      // const { lat, lng } = location;
+      // console.log(`Address: ${address}, Latitude: ${lat}, Longitude: ${lng}`);
+      // const allResults = await getPlacesNearby(lat, lng, [
+      //   "restaurant",
+      //   "shopping_mall",
+      // ]);
+      // console.log(`Found ${allResults.length} nearby places`);
+      const lat = 1;
+      const lng = 1;
+      const allResults = [
+        { name: "Restaurant A", vicinity: "Location A", type: "restaurant" },
+        {
+          name: "Shopping Mall B",
+          vicinity: "Location B",
+          type: "shopping_mall",
+        },
+        { name: "Restaurant C", vicinity: "Location C", type: "restaurant" },
+        {
+          name: "Shopping Mall D",
+          vicinity: "Location D",
+          type: "shopping_mall",
+        },
+        { name: "Restaurant E", vicinity: "Location E", type: "restaurant" },
+        {
+          name: "Shopping Mall F",
+          vicinity: "Location F",
+          type: "shopping_mall",
+        },
+        { name: "Restaurant G", vicinity: "Location G", type: "restaurant" },
+        {
+          name: "Shopping Mall H",
+          vicinity: "Location H",
+          type: "shopping_mall",
+        },
+        { name: "Restaurant I", vicinity: "Location I", type: "restaurant" },
+      ];
       return {
         lat,
         lng,
