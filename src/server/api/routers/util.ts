@@ -25,3 +25,5 @@ export const getLatLngFromAddress = async (address: string) => {
   const [lng, lat] = coordinates;
   return { lat, lng };
 };
+
+export const radius = 3000;
