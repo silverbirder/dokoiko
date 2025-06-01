@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import axios from "axios";
 import { getLatLngFromAddress, radius } from "./util";
+// import fs from "fs";
+// import path from "path";
 
 const YAHOO_API_KEY = process.env.YAHOO_API_KEY ?? "";
 
@@ -136,26 +137,45 @@ export const yahooRouter = createTRPCRouter({
 
 const getYahooLocalSearch = async (lat: number, lng: number) => {
   const url = "https://map.yahooapis.jp/search/local/V1/localSearch";
-  const params = {
+  const params = new URLSearchParams({
     appid: YAHOO_API_KEY,
-    lon: lng,
-    lat: lat,
+    lon: lng.toString(),
+    lat: lat.toString(),
     output: "json",
     gc: GENRE_CODES.join(","),
-    results: 20,
+    results: "20",
     sort: "hybrid",
-    detail: "standard",
-    dist: radius / 1000,
-  };
-  const response = await axios.get(url, { params });
-  const data = response.data as YahooLocalSearchResponse;
+    detail: "full",
+    dist: (radius / 1000).toString(),
+  });
+  const response = await fetch(`${url}?${params.toString()}`);
+  const data = await response.json() as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
+
+  // try {
+  //   const filePath = path.join(process.cwd(), "yahoo_results.json");
+  //   fs.writeFileSync(filePath, JSON.stringify(features, null, 2));
+  //   console.log(`Yahoo results saved to ${filePath}`);
+  // } catch (error) {
+  //   console.error("Error writing Yahoo results to file:", error);
+  // }
+
   return features.map((item) => {
     const [lng, lat] = item.Geometry.Coordinates.split(",").map(Number);
+    let imageUrl: string | undefined;
+    if (item.Property?.Detail) {
+      for (let i = 1; i <= 9; i++) {
+        const key = `Image${i}` as keyof typeof item.Property.Detail;
+        if (item.Property.Detail[key]) {
+          imageUrl = item.Property.Detail[key];
+          break;
+        }
+      }
+    }
     return {
       name: item.Name,
       url: item.Property?.Detail?.PcUrl1 ?? item.Property?.Detail?.MobileUrl1,
-      image: item.Property?.Detail?.Image1,
+      image: imageUrl,
       address: item.Property?.Address,
       latitude: lat,
       longitude: lng,

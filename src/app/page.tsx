@@ -9,6 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  GoogleImage,
 } from "@/components";
 
 type Props = {
@@ -28,9 +29,12 @@ export default async function Home({ searchParams: _searchParams }: Props) {
     ? await api.google.hello({ address }).catch(() => null)
     : null;
 
+  const typedGoogleResults = googleData?.results?.map(item => ({ ...item, type: 'google' })) ?? [];
+  const typedYahooResults = yahooData?.results?.map(item => ({ ...item, type: 'yahoo' })) ?? [];
+
   const results = [
-    ...(yahooData?.results ?? []),
-    ...(googleData?.results ?? []),
+    ...typedYahooResults,
+    ...typedGoogleResults,
   ];
 
   const markers = results
@@ -78,13 +82,15 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                     )}
                   </CardHeader>
                   <CardContent>
-                    {item.image && (
+                    {item.image && item.type === "google" ? (
+                      <GoogleImage photoReference={item.image} altText={item.name ?? "施設画像"} />
+                    ) : item.image && item.type === "yahoo" ? (
                       <img
                         src={item.image}
                         alt={item.name ?? "施設画像"}
                         className="h-40 w-full rounded-md object-cover"
                       />
-                    )}
+                    ) : null}
                   </CardContent>
                   {item.url && (
                     <CardFooter>

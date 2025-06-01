@@ -1,9 +1,7 @@
-import axios from "axios";
-
 export const getLatLngFromAddress = async (address: string) => {
   const gsiUrl = `https://msearch.gsi.go.jp/address-search/AddressSearch?q=${encodeURIComponent(address)}`;
-  const response = await axios.get(gsiUrl);
-  const data = response.data as {
+  const response = await fetch(gsiUrl);
+  const data = await response.json() as {
     geometry?: { coordinates?: [number, number] };
   }[];
 
