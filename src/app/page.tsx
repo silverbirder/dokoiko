@@ -21,21 +21,29 @@ type Props = {
 export default async function Home({ searchParams: _searchParams }: Props) {
   const searchParams = await _searchParams;
   const address = searchParams?.address ?? "";
-  const yahooData = searchParams
-    ? await api.yahoo.hello({ address }).catch(() => null)
+
+  const geocodeResult = address
+    ? await api.google.geocode({ address }).catch(() => null)
     : null;
 
-  const googleData = searchParams
-    ? await api.google.hello({ address }).catch(() => null)
+  const yahooData = geocodeResult
+    ? await api.yahoo
+        .hello({ lat: geocodeResult.lat, lng: geocodeResult.lng })
+        .catch(() => null)
     : null;
 
-  const typedGoogleResults = googleData?.results?.map(item => ({ ...item, type: 'google' })) ?? [];
-  const typedYahooResults = yahooData?.results?.map(item => ({ ...item, type: 'yahoo' })) ?? [];
+  const googleData = geocodeResult
+    ? await api.google
+        .hello({ lat: geocodeResult.lat, lng: geocodeResult.lng })
+        .catch(() => null)
+    : null;
 
-  const results = [
-    ...typedYahooResults,
-    ...typedGoogleResults,
-  ];
+  const typedGoogleResults =
+    googleData?.results?.map((item) => ({ ...item, type: "google" })) ?? [];
+  const typedYahooResults =
+    yahooData?.results?.map((item) => ({ ...item, type: "yahoo" })) ?? [];
+
+  const results = [...typedYahooResults, ...typedGoogleResults];
 
   const markers = results
     .filter((item) => item.latitude && item.longitude)
@@ -44,11 +52,12 @@ export default async function Home({ searchParams: _searchParams }: Props) {
       popupText: item.name ?? item.address ?? "",
     }));
 
-  const initialPosition: [number, number] | undefined = yahooData?.lat && yahooData?.lng
-    ? [yahooData.lat, yahooData.lng]
-    : googleData?.lat && googleData?.lng
-    ? [googleData.lat, googleData.lng]
-    : undefined;
+  const initialPosition: [number, number] | undefined =
+    yahooData?.lat && yahooData?.lng
+      ? [yahooData.lat, yahooData.lng]
+      : googleData?.lat && googleData?.lng
+        ? [googleData.lat, googleData.lng]
+        : undefined;
 
   return (
     <HydrateClient>
@@ -83,7 +92,10 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                   </CardHeader>
                   <CardContent>
                     {item.image && item.type === "google" ? (
-                      <GoogleImage photoReference={item.image} altText={item.name ?? "施設画像"} />
+                      <GoogleImage
+                        photoReference={item.image}
+                        altText={item.name ?? "施設画像"}
+                      />
                     ) : item.image && item.type === "yahoo" ? (
                       <img
                         src={item.image}

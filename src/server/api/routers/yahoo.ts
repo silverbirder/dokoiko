@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { radius } from "./util";
-import { geocodeAddress } from "./google";
 
 const YAHOO_API_KEY = process.env.YAHOO_API_KEY ?? "";
 
@@ -116,15 +115,9 @@ type StyleType = IconStyle | LineStyle | FillStyle;
 
 export const yahooRouter = createTRPCRouter({
   hello: publicProcedure
-    .input(z.object({ address: z.string() }))
+    .input(z.object({ lat: z.number(), lng: z.number() }))
     .query(async ({ input }) => {
-      const { address } = input;
-      if (!address) return null;
-      const location = await geocodeAddress(address);
-      if (!location) {
-        return null;
-      }
-      const { lat, lng } = location;
+      const { lat, lng } = input;
       const results = await getYahooLocalSearch(lat, lng);
       return {
         lat,

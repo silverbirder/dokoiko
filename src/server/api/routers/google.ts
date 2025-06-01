@@ -8,16 +8,17 @@ const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
 const client = new Client({});
 
 export const googleRouter = createTRPCRouter({
-  hello: publicProcedure
+  geocode: publicProcedure
     .input(z.object({ address: z.string() }))
     .query(async ({ input }) => {
       const { address } = input;
       if (!address) return null;
-      const location = await geocodeAddress(address);
-      if (!location) {
-        return null;
-      }
-      const { lat, lng } = location;
+      return geocodeAddress(address);
+    }),
+  hello: publicProcedure
+    .input(z.object({ lat: z.number(), lng: z.number() }))
+    .query(async ({ input }) => {
+      const { lat, lng } = input;
       const allResults = await getPlacesNearby(lat, lng, [
         "restaurant",
         "shopping_mall",
@@ -30,7 +31,7 @@ export const googleRouter = createTRPCRouter({
     }),
 });
 
-export const geocodeAddress = async (
+const geocodeAddress = async (
   address: string,
 ): Promise<{ lat: number; lng: number } | null> => {
   try {
