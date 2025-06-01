@@ -28,32 +28,6 @@ export const googleRouter = createTRPCRouter({
         results: allResults,
       };
     }),
-
-  getPhotoUrlByReference: publicProcedure
-    .input(z.object({ photoReference: z.string() }))
-    .query(async ({ input }) => {
-      const { photoReference } = input;
-      const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${GOOGLE_API_KEY}`;
-
-      try {
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.statusText}`);
-        }
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const base64Image = buffer.toString("base64");
-        const contentType = response.headers.get("content-type");
-
-        return {
-          imageData: `data:${contentType};base64,${base64Image}`,
-          contentType,
-        };
-      } catch (error) {
-        console.error("Error fetching image from Google:", error);
-        throw new Error("Failed to fetch image");
-      }
-    }),
 });
 
 export const geocodeAddress = async (
