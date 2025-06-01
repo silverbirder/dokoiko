@@ -36,6 +36,8 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
     url?: string;
     image?: string;
     address?: string;
+    latitude?: number;
+    longitude?: number;
     type: string;
   }[] = [];
   for (const type of types) {
@@ -56,6 +58,8 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
         ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${r.photos[0].photo_reference}`
         : undefined,
       address: r.vicinity,
+      latitude: r.geometry?.location.lat,
+      longitude: r.geometry?.location.lng,
       type,
     }));
 

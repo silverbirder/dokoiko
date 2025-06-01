@@ -150,10 +150,15 @@ const getYahooLocalSearch = async (lat: number, lng: number) => {
   const response = await axios.get(url, { params });
   const data = response.data as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
-  return features.map((item) => ({
-    name: item.Name,
-    url: item.Property?.Detail?.PcUrl1 ?? item.Property?.Detail?.MobileUrl1,
-    image: item.Property?.Detail?.Image1,
-    address: item.Property?.Address,
-  }));
+  return features.map((item) => {
+    const [lng, lat] = item.Geometry.Coordinates.split(",").map(Number);
+    return {
+      name: item.Name,
+      url: item.Property?.Detail?.PcUrl1 ?? item.Property?.Detail?.MobileUrl1,
+      image: item.Property?.Detail?.Image1,
+      address: item.Property?.Address,
+      latitude: lat,
+      longitude: lng,
+    };
+  });
 };

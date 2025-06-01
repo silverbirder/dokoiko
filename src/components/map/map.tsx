@@ -10,11 +10,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/leaflet/marker-shadow.png",
 });
 
-type Props = {
-  position?: [number, number];
+type MarkerData = {
+  position: [number, number];
+  popupText: string;
 };
 
-export const Map = ({ position }: Props) => {
+type Props = {
+  position?: [number, number];
+  markers?: MarkerData[];
+};
+
+export const Map = ({ position, markers }: Props) => {
   return (
     <MapContainer
       className="h-full w-full"
@@ -26,11 +32,11 @@ export const Map = ({ position }: Props) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position ?? [51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
+      {markers?.map((marker, index) => (
+        <Marker key={index} position={marker.position}>
+          <Popup>{marker.popupText}</Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 };

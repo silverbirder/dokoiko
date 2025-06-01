@@ -33,6 +33,19 @@ export default async function Home({ searchParams: _searchParams }: Props) {
     ...(googleData?.results ?? []),
   ];
 
+  const markers = results
+    .filter((item) => item.latitude && item.longitude)
+    .map((item) => ({
+      position: [item.latitude!, item.longitude!] as [number, number],
+      popupText: item.name ?? item.address ?? "",
+    }));
+
+  const initialPosition: [number, number] | undefined = yahooData?.lat && yahooData?.lng
+    ? [yahooData.lat, yahooData.lng]
+    : googleData?.lat && googleData?.lng
+    ? [googleData.lat, googleData.lng]
+    : undefined;
+
   return (
     <HydrateClient>
       <div className="relative h-screen w-full">
@@ -91,7 +104,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
           </div>
         )}
         <div className="absolute inset-0 z-0">
-          <MapCaller />
+          <MapCaller markers={markers} position={initialPosition} />
         </div>
       </div>
     </HydrateClient>
