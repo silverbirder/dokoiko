@@ -15,7 +15,7 @@ export const googleRouter = createTRPCRouter({
       if (!address) return null;
       return geocodeAddress(address);
     }),
-  hello: publicProcedure
+  searchNearby: publicProcedure
     .input(z.object({ lat: z.number(), lng: z.number() }))
     .query(async ({ input }) => {
       const { lat, lng } = input;

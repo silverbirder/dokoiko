@@ -28,13 +28,13 @@ export default async function Home({ searchParams: _searchParams }: Props) {
 
   const yahooData = geocodeResult
     ? await api.yahoo
-        .hello({ lat: geocodeResult.lat, lng: geocodeResult.lng })
+        .searchLocal({ lat: geocodeResult.lat, lng: geocodeResult.lng })
         .catch(() => null)
     : null;
 
   const googleData = geocodeResult
     ? await api.google
-        .hello({ lat: geocodeResult.lat, lng: geocodeResult.lng })
+        .searchNearby({ lat: geocodeResult.lat, lng: geocodeResult.lng })
         .catch(() => null)
     : null;
 

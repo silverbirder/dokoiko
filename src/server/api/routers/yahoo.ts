@@ -114,7 +114,7 @@ type FillStyle = {
 type StyleType = IconStyle | LineStyle | FillStyle;
 
 export const yahooRouter = createTRPCRouter({
-  hello: publicProcedure
+  searchLocal: publicProcedure
     .input(z.object({ lat: z.number(), lng: z.number() }))
     .query(async ({ input }) => {
       const { lat, lng } = input;
