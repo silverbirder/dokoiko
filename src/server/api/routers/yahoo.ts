@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { getLatLngFromAddress, radius } from "./util";
+import { radius } from "./util";
+import { geocodeAddress } from "./google";
 // import fs from "fs";
 // import path from "path";
 
@@ -121,7 +122,7 @@ export const yahooRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { address } = input;
       if (!address) return null;
-      const location = await getLatLngFromAddress(address);
+      const location = await geocodeAddress(address);
       if (!location) {
         return null;
       }
@@ -149,7 +150,7 @@ const getYahooLocalSearch = async (lat: number, lng: number) => {
     dist: (radius / 1000).toString(),
   });
   const response = await fetch(`${url}?${params.toString()}`);
-  const data = await response.json() as YahooLocalSearchResponse;
+  const data = (await response.json()) as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
 
   // try {

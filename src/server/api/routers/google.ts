@@ -1,10 +1,8 @@
 import { z } from "zod";
-// import fs from "fs";
-// import path from "path";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { Client, Language } from "@googlemaps/google-maps-services-js";
-import { getLatLngFromAddress, radius } from "./util";
+import { radius } from "./util";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
 const client = new Client({});
@@ -15,7 +13,7 @@ export const googleRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { address } = input;
       if (!address) return null;
-      const location = await getLatLngFromAddress(address);
+      const location = await geocodeAddress(address);
       if (!location) {
         return null;
       }
@@ -36,7 +34,7 @@ export const googleRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { photoReference } = input;
       const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${GOOGLE_API_KEY}`;
-      
+
       try {
         const response = await fetch(imageUrl);
         if (!response.ok) {
@@ -46,7 +44,7 @@ export const googleRouter = createTRPCRouter({
         const buffer = Buffer.from(arrayBuffer);
         const base64Image = buffer.toString("base64");
         const contentType = response.headers.get("content-type");
-        
+
         return {
           imageData: `data:${contentType};base64,${base64Image}`,
           contentType,
@@ -57,6 +55,32 @@ export const googleRouter = createTRPCRouter({
       }
     }),
 });
+
+export const geocodeAddress = async (
+  address: string,
+): Promise<{ lat: number; lng: number } | null> => {
+  try {
+    const response = await client.geocode({
+      params: {
+        address,
+        key: GOOGLE_API_KEY,
+        language: Language.ja,
+      },
+    });
+
+    if (response.data.results && response.data.results.length > 0) {
+      const firstResult = response.data.results[0];
+      if (firstResult?.geometry) {
+        const location = firstResult.geometry.location;
+        return { lat: location.lat, lng: location.lng };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Error geocoding address:", error);
+    throw new Error("Failed to geocode address");
+  }
+};
 
 const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
   const allResults: {
