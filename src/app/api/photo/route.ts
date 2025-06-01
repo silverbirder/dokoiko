@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
 
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const base64Image = buffer.toString("base64");
-    const contentType = response.headers.get("content-type") || "image/jpeg";
+    const contentType = response.headers.get("content-type") ?? "image/jpeg";
 
     return NextResponse.json({
       imageData: `data:${contentType};base64,${base64Image}`,

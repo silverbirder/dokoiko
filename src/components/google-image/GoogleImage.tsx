@@ -13,6 +13,10 @@ type PhotoData = {
   contentType: string;
 };
 
+type ErrorData = {
+  error?: string;
+};
+
 export function GoogleImage({ photoReference, altText }: GoogleImageProps) {
   const [photoData, setPhotoData] = useState<PhotoData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,12 +37,12 @@ export function GoogleImage({ photoReference, altText }: GoogleImageProps) {
           `/api/photo?photoReference=${encodeURIComponent(photoReference)}`,
         );
         if (!response.ok) {
-          const errorData = await response.json();
+          const errorData = (await response.json()) as ErrorData;
           throw new Error(
-            errorData.error || `Failed to fetch image: ${response.statusText}`,
+            errorData?.error ?? `Failed to fetch image: ${response.statusText}`,
           );
         }
-        const data: PhotoData = await response.json();
+        const data = (await response.json()) as PhotoData;
         setPhotoData(data);
       } catch (err) {
         if (err instanceof Error) {
@@ -52,7 +56,7 @@ export function GoogleImage({ photoReference, altText }: GoogleImageProps) {
       }
     };
 
-    fetchPhoto();
+    void fetchPhoto();
   }, [photoReference]);
 
   if (isLoading) {
