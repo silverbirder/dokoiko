@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
   GoogleImage,
+  Badge,
 } from "@/components";
 import { getPageHook } from "@/app/page.hook";
 
@@ -51,7 +52,10 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                   className="inline-block max-w-[350px] min-w-[300px]"
                 >
                   <CardHeader>
-                    {item.name && <CardTitle>{item.name}</CardTitle>}
+                    <div className="flex items-center justify-between">
+                      {item.name && <CardTitle>{item.name}</CardTitle>}
+                      {item.type && <Badge>{item.type}</Badge>}
+                    </div>
                     {item.address && (
                       <CardDescription>{item.address}</CardDescription>
                     )}
