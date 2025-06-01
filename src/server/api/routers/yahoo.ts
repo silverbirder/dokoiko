@@ -2,8 +2,6 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { radius } from "./util";
 import { geocodeAddress } from "./google";
-// import fs from "fs";
-// import path from "path";
 
 const YAHOO_API_KEY = process.env.YAHOO_API_KEY ?? "";
 
@@ -152,14 +150,6 @@ const getYahooLocalSearch = async (lat: number, lng: number) => {
   const response = await fetch(`${url}?${params.toString()}`);
   const data = (await response.json()) as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
-
-  // try {
-  //   const filePath = path.join(process.cwd(), "yahoo_results.json");
-  //   fs.writeFileSync(filePath, JSON.stringify(features, null, 2));
-  //   console.log(`Yahoo results saved to ${filePath}`);
-  // } catch (error) {
-  //   console.error("Error writing Yahoo results to file:", error);
-  // }
 
   return features.map((item) => {
     const [lng, lat] = item.Geometry.Coordinates.split(",").map(Number);

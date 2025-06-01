@@ -103,15 +103,6 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
       },
     });
 
-    // const _results = res.data.results;
-    // try {
-    //   const filePath = path.join(process.cwd(), `google_results_${type}.json`);
-    //   fs.writeFileSync(filePath, JSON.stringify(_results, null, 2));
-    //   console.log(`Google results for ${type} saved to ${filePath}`);
-    // } catch (error) {
-    //   console.error(`Error writing Google results to file for ${type}:`, error);
-    // }
-
     const results = res.data.results.map((r) => ({
       name: r.name,
       url: r.website ?? r.url,
