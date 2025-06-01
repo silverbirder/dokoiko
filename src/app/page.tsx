@@ -11,6 +11,7 @@ import {
   CardTitle,
   GoogleImage,
   Badge,
+  YahooCredit,
 } from "@/components";
 import { getPageHook } from "@/app/page.hook";
 
@@ -74,6 +75,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                       />
                     ) : null}
                   </CardContent>
+                  {item.type === "yahoo" && <YahooCredit />}
                   {item.url && (
                     <CardFooter>
                       <a
