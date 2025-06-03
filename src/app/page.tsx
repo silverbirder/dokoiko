@@ -54,10 +54,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                   className="inline-block max-w-[350px] min-w-[300px]"
                 >
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      {item.name && <CardTitle>{item.name}</CardTitle>}
-                      {item.type && <Badge>{item.type}</Badge>}
-                    </div>
+                    {item.name && <CardTitle>{item.name}</CardTitle>}
                     {item.address && (
                       <CardDescription>{item.address}</CardDescription>
                     )}
@@ -84,8 +81,8 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                     )}
                   </CardContent>
                   {item.type === "yahoo" && <YahooCredit />}
-                  {item.url && (
-                    <CardFooter>
+                  {item.url ? (
+                    <CardFooter className="flex items-center justify-between">
                       <a
                         href={item.url}
                         target="_blank"
@@ -94,7 +91,14 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                       >
                         詳細を見る
                       </a>
+                      {item.type && <Badge>{item.type}</Badge>}
                     </CardFooter>
+                  ) : (
+                    item.type && (
+                      <CardFooter className="flex justify-end mt-1">
+                        <Badge>{item.type}</Badge>
+                      </CardFooter>
+                    )
                   )}
                 </Card>
               ))}
