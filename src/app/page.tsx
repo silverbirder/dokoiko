@@ -13,6 +13,7 @@ import {
   Badge,
   YahooCredit,
 } from "@/components";
+import { ImageIcon } from "lucide-react";
 import { getPageHook } from "@/app/page.hook";
 
 type Props = {
@@ -73,7 +74,14 @@ export default async function Home({ searchParams: _searchParams }: Props) {
                         alt={item.name ?? "施設画像"}
                         className="h-40 w-full rounded-md object-cover"
                       />
-                    ) : null}
+                    ) : (
+                      <div className="flex h-40 w-full items-center justify-center rounded-md bg-gray-100">
+                        <div className="text-center text-gray-400">
+                          <ImageIcon className="mx-auto mb-2 h-12 w-12" />
+                          <p className="text-sm">画像なし</p>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                   {item.type === "yahoo" && <YahooCredit />}
                   {item.url && (
