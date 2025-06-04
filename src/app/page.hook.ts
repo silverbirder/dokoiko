@@ -52,7 +52,7 @@ export async function getPageHook({
           : undefined,
     })) ?? [];
 
-  const results = [...typedYahooResults, ...typedGoogleResults];
+  const results = [...typedGoogleResults, ...typedYahooResults];
 
   const markers = results
     .filter((item) => item.latitude && item.longitude)
