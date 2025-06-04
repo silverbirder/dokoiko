@@ -43,6 +43,7 @@ type Props = {
     popupText: string;
   }>;
   centerPosition: [number, number] | undefined;
+  isMore?: boolean;
   onSubmit?: (formData: FormData) => void;
   initialValues?: {
     address?: string;
@@ -55,6 +56,7 @@ export const TopPage = ({
   results,
   markers,
   centerPosition,
+  isMore,
   onSubmit,
   initialValues,
 }: Props) => {
@@ -224,6 +226,16 @@ export const TopPage = ({
                 )}
               </Card>
             ))}
+            {isMore && (
+              <div className="inline-flex items-center justify-center">
+                <Button
+                  variant="outline"
+                  className="h-full bg-white/90 backdrop-blur-sm"
+                >
+                  もっと見る(未実装)
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

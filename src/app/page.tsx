@@ -18,7 +18,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
   const googleTypes = searchParams?.googleTypes
     ? searchParams.googleTypes.split(",")
     : [];
-  const { results, markers, centerPosition } = await getPageHook({
+  const { results, markers, centerPosition, isMore } = await getPageHook({
     address,
     category,
     googleTypes,
@@ -43,6 +43,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
         results={results}
         markers={markers}
         centerPosition={centerPosition}
+        isMore={isMore}
         onSubmit={handleSubmit}
         initialValues={{
           address,

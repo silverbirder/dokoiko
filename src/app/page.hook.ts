@@ -53,6 +53,9 @@ export async function getPageHook({
     })) ?? [];
 
   const results = [...typedGoogleResults, ...typedYahooResults];
+  const isMore =
+    (yahooData?.hasNextPage ?? false) ||
+    (googleData?.results.some((item) => item.nextPageToken) ?? false);
 
   const markers = results
     .filter((item) => item.latitude && item.longitude)
@@ -68,5 +71,5 @@ export async function getPageHook({
         ? [googleData.lat, googleData.lng]
         : undefined;
 
-  return { results, markers, centerPosition };
+  return { results, markers, centerPosition, isMore };
 }

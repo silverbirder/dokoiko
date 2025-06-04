@@ -86,6 +86,7 @@ const getPlacesNearby = async (
     latitude?: number;
     longitude?: number;
     type: string;
+    nextPageToken?: string;
   }[] = [];
 
   if (types.length === 0) {
