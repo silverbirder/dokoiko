@@ -27,7 +27,6 @@ import {
 } from "..";
 import { useCallback, useEffect } from "react";
 
-
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
   category: z.string().min(1, "カテゴリを選択してください"),
@@ -51,7 +50,7 @@ type Props = {
     popupText: string;
   }>;
   centerPosition?: [number, number];
-  onSubmit?: (data: SearchFormData) => void;
+  onSubmit?: (formData: FormData) => void;
 };
 
 export const TopPage = ({
@@ -99,7 +98,14 @@ export const TopPage = ({
 
   const onFormSubmit = useCallback(
     (data: SearchFormData) => {
-      onSubmit?.(data);
+      if (!onSubmit) return;
+      const formData = new FormData();
+      formData.append("address", data.address);
+      formData.append("category", data.category);
+      data.googleTypes.forEach((type) => {
+        formData.append("googleTypes", type);
+      });
+      onSubmit(formData);
     },
     [onSubmit],
   );
