@@ -35,6 +35,7 @@ export const useTopPage = ({
   const [selectedMarkerId, setSelectedMarkerId] = useState<
     number | undefined
   >();
+  const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
 
   useEffect(() => {
     setMapPosition(centerPosition);
@@ -120,5 +121,7 @@ export const useTopPage = ({
     handleGoogleTypesChange,
     onFormSubmit,
     handleCardClick,
+    isAdvancedOptionsOpen,
+    setIsAdvancedOptionsOpen,
   };
 };

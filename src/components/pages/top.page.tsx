@@ -1,7 +1,7 @@
 "use client";
 
 import { categoryMapping } from "@/server/api/routers/data";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, ChevronDown } from "lucide-react";
 import {
   Badge,
   Button,
@@ -11,6 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   GoogleImage,
   GoogleTypeSelector,
   Input,
@@ -66,6 +69,8 @@ export const TopPage = ({
     handleGoogleTypesChange,
     onFormSubmit,
     handleCardClick,
+    isAdvancedOptionsOpen,
+    setIsAdvancedOptionsOpen,
   } = useTopPage({
     centerPosition,
     onSubmit,
@@ -94,41 +99,67 @@ export const TopPage = ({
           {errors.address && (
             <p className="text-sm text-red-500">{errors.address.message}</p>
           )}
-          <Controller
-            name="category"
-            control={control}
-            render={({ field }) => (
-              <Select
-                value={field.value ?? undefined}
-                onValueChange={(value) =>
-                  field.onChange(value === "none" ? "" : value)
-                }
+
+          <Collapsible
+            open={isAdvancedOptionsOpen}
+            onOpenChange={setIsAdvancedOptionsOpen}
+          >
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-white"
+                type="button"
               >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="カテゴリを選択してください（任意）" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">カテゴリなし</SelectItem>
-                  {Object.keys(categoryMapping).map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.category && (
-            <p className="text-sm text-red-500">{errors.category.message}</p>
-          )}
-          <GoogleTypeSelector
-            selectedTypes={googleTypes}
-            selectedCategory={selectedCategory ?? ""}
-            onSelectedTypesChange={handleGoogleTypesChange}
-          />
-          {errors.googleTypes && (
-            <p className="text-sm text-red-500">{errors.googleTypes.message}</p>
-          )}
+                詳細検索オプション
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    isAdvancedOptionsOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3 pt-3">
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value ?? undefined}
+                    onValueChange={(value) =>
+                      field.onChange(value === "none" ? "" : value)
+                    }
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="カテゴリを選択してください（任意）" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">カテゴリなし</SelectItem>
+                      {Object.keys(categoryMapping).map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.category && (
+                <p className="text-sm text-red-500">
+                  {errors.category.message}
+                </p>
+              )}
+              <GoogleTypeSelector
+                selectedTypes={googleTypes}
+                selectedCategory={selectedCategory ?? ""}
+                onSelectedTypesChange={handleGoogleTypesChange}
+              />
+              {errors.googleTypes && (
+                <p className="text-sm text-red-500">
+                  {errors.googleTypes.message}
+                </p>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </form>
       </main>
       {results.length > 0 && (
