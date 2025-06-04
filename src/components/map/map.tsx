@@ -19,6 +19,7 @@ type MarkerData = {
 type Props = {
   position?: [number, number];
   markers?: MarkerData[];
+  selectedMarkerId?: number;
 };
 
 const MapCenterUpdater = ({ position }: { position?: [number, number] }) => {
@@ -31,7 +32,26 @@ const MapCenterUpdater = ({ position }: { position?: [number, number] }) => {
   return null;
 };
 
-export const Map = ({ position, markers }: Props) => {
+const PopupController = ({
+  selectedMarkerId,
+  markers,
+}: {
+  selectedMarkerId?: number;
+  markers?: MarkerData[];
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (selectedMarkerId !== undefined && markers?.[selectedMarkerId]) {
+      const marker = markers[selectedMarkerId];
+      map.openPopup(marker.popupText, marker.position);
+    }
+  }, [selectedMarkerId, markers, map]);
+
+  return null;
+};
+
+export const Map = ({ position, markers, selectedMarkerId }: Props) => {
   return (
     <MapContainer
       className="h-full w-full"
@@ -40,13 +60,16 @@ export const Map = ({ position, markers }: Props) => {
       scrollWheelZoom={false}
     >
       <MapCenterUpdater position={position} />
+      <PopupController selectedMarkerId={selectedMarkerId} markers={markers} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {markers?.map((marker, index) => (
         <Marker key={index} position={marker.position}>
-          <Popup>{marker.popupText}</Popup>
+          <Popup autoClose={false} closeOnClick={false} autoPan={true}>
+            {marker.popupText}
+          </Popup>
         </Marker>
       ))}
     </MapContainer>

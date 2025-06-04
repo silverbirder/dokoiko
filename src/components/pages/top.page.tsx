@@ -25,7 +25,7 @@ import {
   SelectValue,
   YahooCredit,
 } from "..";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 
 const searchFormSchema = z.object({
@@ -45,6 +45,7 @@ type Props = {
     image?: string;
     type?: string;
     url?: string;
+    position?: [number, number];
   }>;
   markers: Array<{
     position: [number, number];
@@ -66,6 +67,15 @@ export const TopPage = ({
   onSubmit,
   initialValues,
 }: Props) => {
+  const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
+    centerPosition,
+  );
+  const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>();
+
+  useEffect(() => {
+    setMapPosition(centerPosition);
+  }, [centerPosition]);
+
   const {
     control,
     handleSubmit,
@@ -126,6 +136,11 @@ export const TopPage = ({
     },
     [onSubmit],
   );
+
+  const handleCardClick = useCallback((position: [number, number], index: number) => {
+    setMapPosition(position);
+    setSelectedMarkerId(index);
+  }, []);
 
   return (
     <div className="relative h-screen w-full">
@@ -192,7 +207,8 @@ export const TopPage = ({
             {results.map((item, index) => (
               <Card
                 key={index}
-                className="inline-block max-w-[350px] min-w-[300px]"
+                className="inline-block max-w-[350px] min-w-[300px] cursor-pointer transition-shadow hover:shadow-lg"
+                onClick={() => item.position && handleCardClick(item.position, index)}
               >
                 <CardHeader>
                   {item.name && <CardTitle>{item.name}</CardTitle>}
@@ -249,7 +265,11 @@ export const TopPage = ({
         </div>
       )}
       <div className="absolute inset-0 z-0">
-        <MapCaller markers={markers} position={centerPosition} />
+        <MapCaller 
+          markers={markers} 
+          position={mapPosition} 
+          selectedMarkerId={selectedMarkerId}
+        />
       </div>
     </div>
   );

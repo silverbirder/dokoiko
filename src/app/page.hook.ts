@@ -34,9 +34,23 @@ export async function getPageHook({
     : null;
 
   const typedGoogleResults =
-    googleData?.results?.map((item) => ({ ...item, type: "google" })) ?? [];
+    googleData?.results?.map((item) => ({
+      ...item,
+      type: "google",
+      position:
+        item.latitude && item.longitude
+          ? ([item.latitude, item.longitude] as [number, number])
+          : undefined,
+    })) ?? [];
   const typedYahooResults =
-    yahooData?.results?.map((item) => ({ ...item, type: "yahoo" })) ?? [];
+    yahooData?.results?.map((item) => ({
+      ...item,
+      type: "yahoo",
+      position:
+        item.latitude && item.longitude
+          ? ([item.latitude, item.longitude] as [number, number])
+          : undefined,
+    })) ?? [];
 
   const results = [...typedYahooResults, ...typedGoogleResults];
 
