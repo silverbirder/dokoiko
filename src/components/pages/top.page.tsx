@@ -26,6 +26,7 @@ import {
   YahooCredit,
 } from "..";
 import { useCallback, useEffect } from "react";
+import Image from "next/image";
 
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
@@ -206,9 +207,11 @@ export const TopPage = ({
                       altText={item.name ?? "施設画像"}
                     />
                   ) : item.image && item.type === "yahoo" ? (
-                    <img
+                    <Image
                       src={item.image}
                       alt={item.name ?? "施設画像"}
+                      width={300}
+                      height={200}
                       className="h-40 w-full rounded-md object-cover"
                     />
                   ) : (
