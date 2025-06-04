@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { radius } from "./util";
+import { radius } from "./data";
 import { categoryMapping } from "./data";
 import type { YahooLocalSearchResponse } from "./yahoo.type";
 

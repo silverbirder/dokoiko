@@ -1,9 +1,17 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMap,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect } from "react";
+import { radius } from "@/server/api/routers/data";
 
 L.Icon.Default.mergeOptions({
   iconUrl: "/leaflet/marker-icon.png",
@@ -56,7 +64,7 @@ export const Map = ({ position, markers, selectedMarkerId }: Props) => {
     <MapContainer
       className="h-full w-full"
       center={position ?? [51.505, -0.09]}
-      zoom={13}
+      zoom={14}
       scrollWheelZoom={false}
     >
       <MapCenterUpdater position={position} />
@@ -65,6 +73,18 @@ export const Map = ({ position, markers, selectedMarkerId }: Props) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      {position && (
+        <Circle
+          center={position}
+          radius={radius}
+          pathOptions={{
+            color: "blue",
+            fillColor: "blue",
+            fillOpacity: 0.1,
+            weight: 2,
+          }}
+        />
+      )}
       {markers?.map((marker, index) => (
         <Marker key={index} position={marker.position}>
           <Popup autoClose={false} closeOnClick={false} autoPan={true}>

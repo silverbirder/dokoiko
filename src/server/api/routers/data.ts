@@ -149,3 +149,5 @@ export const categoryMapping = {
     google: ["church", "mosque", "synagogue", "hindu_temple"],
   },
 };
+
+export const radius = 3000;

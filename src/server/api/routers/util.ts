@@ -27,8 +27,6 @@ export const getLatLngFromAddress = async (address: string) => {
   return { lat, lng };
 };
 
-export const radius = 3000;
-
 export const saveResultsToFile = (
   prefix: string,
   type: string,

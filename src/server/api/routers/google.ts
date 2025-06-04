@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { Client, Language } from "@googlemaps/google-maps-services-js";
-import { radius } from "./util";
+import { radius } from "./data";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
 const client = new Client({});
