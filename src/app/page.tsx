@@ -44,6 +44,11 @@ export default async function Home({ searchParams: _searchParams }: Props) {
         markers={markers}
         centerPosition={centerPosition}
         onSubmit={handleSubmit}
+        initialValues={{
+          address,
+          category,
+          googleTypes,
+        }}
       />
     </HydrateClient>
   );

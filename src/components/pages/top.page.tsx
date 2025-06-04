@@ -51,6 +51,11 @@ type Props = {
   }>;
   centerPosition?: [number, number];
   onSubmit?: (formData: FormData) => void;
+  initialValues?: {
+    address?: string;
+    category?: string;
+    googleTypes?: string[];
+  };
 };
 
 export const TopPage = ({
@@ -58,6 +63,7 @@ export const TopPage = ({
   markers,
   centerPosition,
   onSubmit,
+  initialValues,
 }: Props) => {
   const {
     control,
@@ -68,9 +74,9 @@ export const TopPage = ({
   } = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
-      address: "",
-      category: Object.keys(categoryMapping)[0] ?? "",
-      googleTypes: [],
+      address: initialValues?.address ?? "",
+      category: initialValues?.category ?? Object.keys(categoryMapping)[0] ?? "",
+      googleTypes: initialValues?.googleTypes ?? [],
     },
   });
   const selectedCategory = watch("category");
