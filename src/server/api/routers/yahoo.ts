@@ -8,14 +8,27 @@ const YAHOO_API_KEY = process.env.YAHOO_API_KEY ?? "";
 
 export const yahooRouter = createTRPCRouter({
   searchLocal: publicProcedure
-    .input(z.object({ lat: z.number(), lng: z.number(), category: z.string() }))
+    .input(
+      z.object({
+        lat: z.number(),
+        lng: z.number(),
+        category: z.string(),
+        page: z.number().default(1),
+      }),
+    )
     .query(async ({ input }) => {
-      const { lat, lng, category } = input;
-      const results = await getYahooLocalSearch(lat, lng, category);
+      const { lat, lng, category, page } = input;
+      const { results, hasNextPage } = await getYahooLocalSearch(
+        lat,
+        lng,
+        category,
+        page,
+      );
       return {
         lat,
         lng,
         results,
+        hasNextPage,
       };
     }),
 });
@@ -24,11 +37,13 @@ const getYahooLocalSearch = async (
   lat: number,
   lng: number,
   category: string,
+  page = 1,
 ) => {
   console.log("[Yahoo API] getYahooLocalSearch parameters:", {
     lat,
     lng,
     category,
+    page,
     timestamp: new Date().toISOString(),
   });
 
@@ -49,6 +64,7 @@ const getYahooLocalSearch = async (
     lat: lat.toString(),
     output: "json",
     results: "20",
+    start: ((page - 1) * 20 + 1).toString(),
     sort: "hybrid",
     detail: "full",
     dist: (radius / 1000).toString(),
@@ -68,14 +84,9 @@ const getYahooLocalSearch = async (
   const response = await fetch(`${url}?${params.toString()}`);
   const data = (await response.json()) as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
+  const total = data.ResultInfo?.Total ?? 0;
 
-  console.log("[Yahoo API] Response summary:", {
-    responseStatus: response.status,
-    featuresCount: features.length,
-    hasData: data.Feature !== undefined,
-  });
-
-  return features.map((item) => {
+  const results = features.map((item) => {
     const [lng, lat] = item.Geometry.Coordinates.split(",").map(Number);
     let imageUrl: string | undefined;
     if (item.Property?.Detail) {
@@ -96,4 +107,20 @@ const getYahooLocalSearch = async (
       longitude: lng,
     };
   });
+
+  const currentStart = (page - 1) * 20 + 1;
+  const currentEnd = currentStart + results.length - 1;
+
+  console.log("[Yahoo API] Response summary:", {
+    responseStatus: response.status,
+    featuresCount: features.length,
+    total,
+    currentStart,
+    currentEnd,
+    hasData: data.Feature !== undefined,
+  });
+
+  const hasNextPage = currentEnd < total;
+
+  return { results, hasNextPage };
 };
