@@ -40,8 +40,12 @@ type Props = {
     popupText: string;
   }>;
   centerPosition: [number, number] | undefined;
-  onSubmit: (data: any) => void;
-  initialValues: any;
+  onSubmit?: (formData: FormData) => void;
+  initialValues?: {
+    address?: string;
+    category?: string;
+    googleTypes?: string[];
+  };
 };
 
 export const TopPage = ({
