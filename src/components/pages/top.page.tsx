@@ -2,9 +2,6 @@
 
 import { categoryMapping } from "@/server/api/routers/data";
 import { ImageIcon } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Badge,
   Button,
@@ -25,18 +22,9 @@ import {
   SelectValue,
   YahooCredit,
 } from "..";
-import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-
-const searchFormSchema = z.object({
-  address: z.string().min(1, "住所を入力してください"),
-  category: z.string().optional(),
-  googleTypes: z
-    .array(z.string())
-    .max(3, "Google検索オプションは最大3つまでです"),
-});
-
-type SearchFormData = z.infer<typeof searchFormSchema>;
+import { useTopPage } from "./top.hook";
+import { Controller } from "react-hook-form";
 
 type Props = {
   results: Array<{
@@ -51,13 +39,9 @@ type Props = {
     position: [number, number];
     popupText: string;
   }>;
-  centerPosition?: [number, number];
-  onSubmit?: (formData: FormData) => void;
-  initialValues?: {
-    address?: string;
-    category?: string;
-    googleTypes?: string[];
-  };
+  centerPosition: [number, number] | undefined;
+  onSubmit: (data: any) => void;
+  initialValues: any;
 };
 
 export const TopPage = ({
@@ -67,80 +51,22 @@ export const TopPage = ({
   onSubmit,
   initialValues,
 }: Props) => {
-  const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
-    centerPosition,
-  );
-  const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>();
-
-  useEffect(() => {
-    setMapPosition(centerPosition);
-  }, [centerPosition]);
-
   const {
+    mapPosition,
+    selectedMarkerId,
     control,
     handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<SearchFormData>({
-    resolver: zodResolver(searchFormSchema),
-    defaultValues: {
-      address: initialValues?.address ?? "",
-      category: initialValues?.category ?? "",
-      googleTypes: initialValues?.googleTypes ?? [],
-    },
+    errors,
+    selectedCategory,
+    googleTypes,
+    handleGoogleTypesChange,
+    onFormSubmit,
+    handleCardClick,
+  } = useTopPage({
+    centerPosition,
+    onSubmit,
+    initialValues,
   });
-  const selectedCategory = watch("category");
-  const googleTypes = watch("googleTypes");
-
-  useEffect(() => {
-    if (!selectedCategory) {
-      // カテゴリが未選択の場合は、googleTypesをクリア
-      if (googleTypes.length > 0) {
-        setValue("googleTypes", []);
-      }
-      return;
-    }
-
-    const categoryConfig =
-      categoryMapping[selectedCategory as keyof typeof categoryMapping];
-    const availableTypes = categoryConfig?.google || [];
-    const filteredTypes = googleTypes.filter((type) =>
-      availableTypes.includes(type),
-    );
-
-    if (filteredTypes.length !== googleTypes.length) {
-      setValue("googleTypes", filteredTypes);
-    }
-  }, [selectedCategory, googleTypes, setValue]);
-
-  const handleGoogleTypesChange = useCallback(
-    (types: string[]) => {
-      setValue("googleTypes", types);
-    },
-    [setValue],
-  );
-
-  const onFormSubmit = useCallback(
-    (data: SearchFormData) => {
-      if (!onSubmit) return;
-      const formData = new FormData();
-      formData.append("address", data.address);
-      if (data.category) {
-        formData.append("category", data.category);
-      }
-      data.googleTypes.forEach((type) => {
-        formData.append("googleTypes", type);
-      });
-      onSubmit(formData);
-    },
-    [onSubmit],
-  );
-
-  const handleCardClick = useCallback((position: [number, number], index: number) => {
-    setMapPosition(position);
-    setSelectedMarkerId(index);
-  }, []);
 
   return (
     <div className="relative h-screen w-full">
@@ -208,7 +134,9 @@ export const TopPage = ({
               <Card
                 key={index}
                 className="inline-block max-w-[350px] min-w-[300px] cursor-pointer transition-shadow hover:shadow-lg"
-                onClick={() => item.position && handleCardClick(item.position, index)}
+                onClick={() =>
+                  item.position && handleCardClick(item.position, index)
+                }
               >
                 <CardHeader>
                   {item.name && <CardTitle>{item.name}</CardTitle>}
@@ -265,9 +193,9 @@ export const TopPage = ({
         </div>
       )}
       <div className="absolute inset-0 z-0">
-        <MapCaller 
-          markers={markers} 
-          position={mapPosition} 
+        <MapCaller
+          markers={markers}
+          position={mapPosition}
           selectedMarkerId={selectedMarkerId}
         />
       </div>
