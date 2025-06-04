@@ -18,6 +18,9 @@ export const GoogleTypeSelector = ({
   onSelectedTypesChange,
 }: Props) => {
   const availableTypes = useMemo(() => {
+    if (!selectedCategory) {
+      return [];
+    }
     const categoryConfig =
       categoryMapping[selectedCategory as keyof typeof categoryMapping];
     return categoryConfig?.google || [];
@@ -49,33 +52,39 @@ export const GoogleTypeSelector = ({
       <div className="mb-2 flex items-center gap-2">
         <Settings className="h-4 w-4" />
         <span className="text-sm font-medium">
-          Google検索オプション (最大3つ) - {selectedCategory}
+          Google検索オプション (最大3つ) {selectedCategory ? `- ${selectedCategory}` : "- カテゴリなし"}
         </span>
       </div>
-      <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto">
-        {filteredGooglePlaceTypes.map(([type, label]) => (
-          <div key={type} className="flex items-center space-x-2 text-xs">
-            <Checkbox
-              id={type}
-              checked={selectedTypes.includes(type)}
-              onCheckedChange={(checked) => handleTypeChange(type, !!checked)}
-              disabled={
-                !selectedTypes.includes(type) && selectedTypes.length >= 3
-              }
-            />
-            <Label
-              className={`cursor-pointer text-xs ${
-                selectedTypes.length >= 3 && !selectedTypes.includes(type)
-                  ? "text-gray-400"
-                  : ""
-              }`}
-              htmlFor={type}
-            >
-              {label}
-            </Label>
-          </div>
-        ))}
-      </div>
+      {!selectedCategory ? (
+        <div className="text-center text-sm text-gray-500">
+          カテゴリを選択すると、より詳細な検索オプションが利用できます
+        </div>
+      ) : (
+        <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto">
+          {filteredGooglePlaceTypes.map(([type, label]) => (
+            <div key={type} className="flex items-center space-x-2 text-xs">
+              <Checkbox
+                id={type}
+                checked={selectedTypes.includes(type)}
+                onCheckedChange={(checked) => handleTypeChange(type, !!checked)}
+                disabled={
+                  !selectedTypes.includes(type) && selectedTypes.length >= 3
+                }
+              />
+              <Label
+                className={`cursor-pointer text-xs ${
+                  selectedTypes.length >= 3 && !selectedTypes.includes(type)
+                    ? "text-gray-400"
+                    : ""
+                }`}
+                htmlFor={type}
+              >
+                {label}
+              </Label>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

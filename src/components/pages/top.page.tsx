@@ -29,7 +29,7 @@ import { useCallback, useEffect } from "react";
 
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
-  category: z.string().min(1, "カテゴリを選択してください"),
+  category: z.string().optional(),
   googleTypes: z
     .array(z.string())
     .max(3, "Google検索オプションは最大3つまでです"),
@@ -75,7 +75,7 @@ export const TopPage = ({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
       address: initialValues?.address ?? "",
-      category: initialValues?.category ?? Object.keys(categoryMapping)[0] ?? "",
+      category: initialValues?.category ?? "",
       googleTypes: initialValues?.googleTypes ?? [],
     },
   });
@@ -83,6 +83,14 @@ export const TopPage = ({
   const googleTypes = watch("googleTypes");
 
   useEffect(() => {
+    if (!selectedCategory) {
+      // カテゴリが未選択の場合は、googleTypesをクリア
+      if (googleTypes.length > 0) {
+        setValue("googleTypes", []);
+      }
+      return;
+    }
+
     const categoryConfig =
       categoryMapping[selectedCategory as keyof typeof categoryMapping];
     const availableTypes = categoryConfig?.google || [];
@@ -107,7 +115,9 @@ export const TopPage = ({
       if (!onSubmit) return;
       const formData = new FormData();
       formData.append("address", data.address);
-      formData.append("category", data.category);
+      if (data.category) {
+        formData.append("category", data.category);
+      }
       data.googleTypes.forEach((type) => {
         formData.append("googleTypes", type);
       });
@@ -142,11 +152,17 @@ export const TopPage = ({
             name="category"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value ?? undefined}
+                onValueChange={(value) =>
+                  field.onChange(value === "none" ? "" : value)
+                }
+              >
                 <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="カテゴリを選択してください" />
+                  <SelectValue placeholder="カテゴリを選択してください（任意）" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">カテゴリなし</SelectItem>
                   {Object.keys(categoryMapping).map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
@@ -161,7 +177,7 @@ export const TopPage = ({
           )}
           <GoogleTypeSelector
             selectedTypes={googleTypes}
-            selectedCategory={selectedCategory}
+            selectedCategory={selectedCategory ?? ""}
             onSelectedTypesChange={handleGoogleTypesChange}
           />
           {errors.googleTypes && (

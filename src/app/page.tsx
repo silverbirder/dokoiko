@@ -14,7 +14,7 @@ type Props = {
 export default async function Home({ searchParams: _searchParams }: Props) {
   const searchParams = await _searchParams;
   const address = searchParams?.address ?? "";
-  const category = searchParams?.category ?? "グルメ・レストラン";
+  const category = searchParams?.category ?? "";
   const googleTypes = searchParams?.googleTypes
     ? searchParams.googleTypes.split(",")
     : [];

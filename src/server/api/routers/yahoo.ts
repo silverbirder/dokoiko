@@ -28,18 +28,24 @@ const getYahooLocalSearch = async (
   const url = "https://map.yahooapis.jp/search/local/V1/localSearch";
   const categoryConfig =
     categoryMapping[category as keyof typeof categoryMapping];
-  const genreCodes = categoryConfig?.yahoo ?? ["01"];
-  const params = new URLSearchParams({
+  const genreCodes = categoryConfig?.yahoo;
+
+  const baseParams = {
     appid: YAHOO_API_KEY,
     lon: lng.toString(),
     lat: lat.toString(),
     output: "json",
-    gc: genreCodes.join(","),
     results: "20",
     sort: "hybrid",
     detail: "full",
     dist: (radius / 1000).toString(),
-  });
+  };
+
+  const params = new URLSearchParams(baseParams);
+  if (category && genreCodes && genreCodes.length > 0) {
+    params.set("gc", genreCodes.join(","));
+  }
+
   const response = await fetch(`${url}?${params.toString()}`);
   const data = (await response.json()) as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
