@@ -17,7 +17,7 @@ type ErrorData = {
   error?: string;
 };
 
-export function GoogleImage({ photoReference, altText }: GoogleImageProps) {
+export const GoogleImage = ({ photoReference, altText }: GoogleImageProps) => {
   const [photoData, setPhotoData] = useState<PhotoData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -83,4 +83,4 @@ export function GoogleImage({ photoReference, altText }: GoogleImageProps) {
       className="h-40 w-full rounded-md object-cover"
     />
   );
-}
+};

@@ -16,13 +16,20 @@ export const googleRouter = createTRPCRouter({
       return geocodeAddress(address);
     }),
   searchNearby: publicProcedure
-    .input(z.object({ lat: z.number(), lng: z.number() }))
+    .input(
+      z.object({
+        lat: z.number(),
+        lng: z.number(),
+        selectedTypes: z.array(z.string()).max(3).optional(),
+      }),
+    )
     .query(async ({ input }) => {
-      const { lat, lng } = input;
-      const allResults = await getPlacesNearby(lat, lng, [
-        "restaurant",
-        "shopping_mall",
-      ]);
+      const { lat, lng, selectedTypes } = input;
+      const types =
+        selectedTypes && selectedTypes.length > 0
+          ? selectedTypes
+          : ["restaurant"];
+      const allResults = await getPlacesNearby(lat, lng, types);
       return {
         lat,
         lng,

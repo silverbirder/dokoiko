@@ -1,124 +1,17 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { radius } from "./util";
+import { categoryMapping } from "./data";
+import type { YahooLocalSearchResponse } from "./yahoo.type";
 
 const YAHOO_API_KEY = process.env.YAHOO_API_KEY ?? "";
 
-const GENRE_CODES = [
-  "01", // グルメ
-];
-
-type YahooLocalSearchResponse = {
-  ResultInfo: {
-    Count: number;
-    Total: number;
-    Start: number;
-    Latency: number;
-    Status: number;
-  };
-  Feature: Feature[];
-};
-
-type Feature = {
-  Id: string;
-  Gid: string;
-  Name: string;
-  Geometry: {
-    Type: string;
-    Coordinates: string;
-  };
-  Property: Property;
-};
-
-type Property = {
-  Uid: string;
-  CassetteId: string;
-  Yomi?: string;
-  Country?: {
-    Code: string;
-    Name: string;
-  };
-  Address?: string;
-  GovernmentCode?: string;
-  Station?: Station[];
-  PlaceInfo?: {
-    FloorName?: string;
-  };
-  MapType?: string;
-  MapScale?: string;
-  Tel1?: string;
-  Genre?: Genre[];
-  Building?: {
-    Id?: string;
-    Name?: string;
-    Floor?: string;
-  };
-  CatchCopy?: string;
-  Coupon?: string;
-  ReviewCount?: string;
-  Detail?: {
-    ZipCode?: string;
-    Fax1?: string;
-    Access1?: string;
-    PcUrl1?: string;
-    MobileUrl1?: string;
-    ReviewUrl?: string;
-    Image1?: string;
-  };
-  Style?: StyleType;
-};
-
-type Station = {
-  Id: string;
-  Name: string;
-  Railway: string;
-  Exit?: string;
-  ExitId?: string;
-  Distance?: string;
-  Time?: string;
-};
-
-type Genre = {
-  Code: string;
-  Name: string;
-};
-
-type IconStyle = {
-  Type: "icon";
-  Id?: string;
-  Target?: string[];
-  Image?: string;
-  Anchor?: string;
-  Size?: string;
-};
-
-type LineStyle = {
-  Type: "line";
-  Id?: string;
-  Target?: string[];
-  Size?: string;
-  Color?: string;
-  Opacity?: string;
-  StartLine?: "arrow";
-  EndLine?: "arrow";
-};
-
-type FillStyle = {
-  Type: "fill";
-  Id?: string;
-  Target?: string[];
-  Color?: string;
-  Opacity?: string;
-};
-
-type StyleType = IconStyle | LineStyle | FillStyle;
-
 export const yahooRouter = createTRPCRouter({
   searchLocal: publicProcedure
-    .input(z.object({ lat: z.number(), lng: z.number() }))
+    .input(z.object({ lat: z.number(), lng: z.number(), category: z.string() }))
     .query(async ({ input }) => {
-      const { lat, lng } = input;
-      const results = await getYahooLocalSearch(lat, lng);
+      const { lat, lng, category } = input;
+      const results = await getYahooLocalSearch(lat, lng, category);
       return {
         lat,
         lng,
@@ -127,14 +20,21 @@ export const yahooRouter = createTRPCRouter({
     }),
 });
 
-const getYahooLocalSearch = async (lat: number, lng: number) => {
+const getYahooLocalSearch = async (
+  lat: number,
+  lng: number,
+  category: string,
+) => {
   const url = "https://map.yahooapis.jp/search/local/V1/localSearch";
+  const categoryConfig =
+    categoryMapping[category as keyof typeof categoryMapping];
+  const genreCodes = categoryConfig?.yahoo ?? ["01"];
   const params = new URLSearchParams({
     appid: YAHOO_API_KEY,
     lon: lng.toString(),
     lat: lat.toString(),
     output: "json",
-    gc: GENRE_CODES.join(","),
+    gc: genreCodes.join(","),
     results: "20",
     sort: "hybrid",
     detail: "full",

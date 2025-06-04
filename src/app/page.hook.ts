@@ -1,19 +1,35 @@
 import { api } from "@/trpc/server";
 
-export async function getPageHook(address: string) {
+export async function getPageHook({
+  address,
+  category,
+  googleTypes,
+}: {
+  address: string;
+  category: string;
+  googleTypes: string[];
+}) {
   const geocodeResult = address
     ? await api.google.geocode({ address }).catch(() => null)
     : null;
 
   const yahooData = geocodeResult
     ? await api.yahoo
-        .searchLocal({ lat: geocodeResult.lat, lng: geocodeResult.lng })
+        .searchLocal({
+          lat: geocodeResult.lat,
+          lng: geocodeResult.lng,
+          category,
+        })
         .catch(() => null)
     : null;
 
   const googleData = geocodeResult
     ? await api.google
-        .searchNearby({ lat: geocodeResult.lat, lng: geocodeResult.lng })
+        .searchNearby({
+          lat: geocodeResult.lat,
+          lng: geocodeResult.lng,
+          selectedTypes: googleTypes.length > 0 ? googleTypes : undefined,
+        })
         .catch(() => null)
     : null;
 
@@ -31,12 +47,12 @@ export async function getPageHook(address: string) {
       popupText: item.name ?? item.address ?? "",
     }));
 
-  const initialPosition: [number, number] | undefined =
+  const centerPosition: [number, number] | undefined =
     yahooData?.lat && yahooData?.lng
       ? [yahooData.lat, yahooData.lng]
       : googleData?.lat && googleData?.lng
         ? [googleData.lat, googleData.lng]
         : undefined;
 
-  return { results, markers, initialPosition };
+  return { results, markers, centerPosition };
 }
