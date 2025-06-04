@@ -26,6 +26,7 @@ type MarkerData = {
 
 type Props = {
   position?: [number, number];
+  addressPosition?: [number, number];
   markers?: MarkerData[];
   selectedMarkerId?: number;
 };
@@ -59,13 +60,17 @@ const PopupController = ({
   return null;
 };
 
-export const Map = ({ position, markers, selectedMarkerId }: Props) => {
+export const Map = ({
+  position,
+  addressPosition,
+  markers,
+  selectedMarkerId,
+}: Props) => {
   return (
     <MapContainer
       className="h-full w-full"
       center={position ?? [51.505, -0.09]}
       zoom={14}
-      scrollWheelZoom={false}
     >
       <MapCenterUpdater position={position} />
       <PopupController selectedMarkerId={selectedMarkerId} markers={markers} />
@@ -73,9 +78,9 @@ export const Map = ({ position, markers, selectedMarkerId }: Props) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {position && (
+      {addressPosition && (
         <Circle
-          center={position}
+          center={addressPosition}
           radius={radius}
           pathOptions={{
             color: "blue",

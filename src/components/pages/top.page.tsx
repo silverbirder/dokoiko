@@ -231,6 +231,7 @@ export const TopPage = ({
         <MapCaller
           markers={markers}
           position={mapPosition}
+          addressPosition={centerPosition}
           selectedMarkerId={selectedMarkerId}
         />
       </div>
