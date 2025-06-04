@@ -150,7 +150,7 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
     totalResults: allResults.length,
     resultsByType: allResults.reduce(
       (acc, result) => {
-        acc[result.type] = (acc[result.type] || 0) + 1;
+        acc[result.type] = (acc[result.type] ?? 0) + 1;
         return acc;
       },
       {} as Record<string, number>,
