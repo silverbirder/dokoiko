@@ -26,9 +26,7 @@ export const googleRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { lat, lng, selectedTypes } = input;
       const types =
-        selectedTypes && selectedTypes.length > 0
-          ? selectedTypes
-          : ["restaurant"];
+        selectedTypes && selectedTypes.length > 0 ? selectedTypes : [];
       const allResults = await getPlacesNearby(lat, lng, types);
       return {
         lat,
@@ -74,13 +72,13 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
     longitude?: number;
     type: string;
   }[] = [];
-  for (const type of types) {
+
+  if (types.length === 0) {
     const res = await client.placesNearby({
       params: {
         location: { lat, lng },
         language: Language.ja,
         radius,
-        type,
         key: GOOGLE_API_KEY,
       },
     });
@@ -92,10 +90,34 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
       address: r.vicinity,
       latitude: r.geometry?.location.lat,
       longitude: r.geometry?.location.lng,
-      type,
+      type: "all",
     }));
 
     allResults.push(...results);
+  } else {
+    for (const type of types) {
+      const res = await client.placesNearby({
+        params: {
+          location: { lat, lng },
+          language: Language.ja,
+          radius,
+          type,
+          key: GOOGLE_API_KEY,
+        },
+      });
+
+      const results = res.data.results.map((r) => ({
+        name: r.name,
+        url: r.website ?? r.url,
+        image: r.photos?.[0]?.photo_reference,
+        address: r.vicinity,
+        latitude: r.geometry?.location.lat,
+        longitude: r.geometry?.location.lng,
+        type,
+      }));
+
+      allResults.push(...results);
+    }
   }
 
   return allResults;
