@@ -63,6 +63,14 @@ const geocodeAddress = async (
 };
 
 const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
+  console.log("[Google Places API] getPlacesNearby parameters:", {
+    lat,
+    lng,
+    types,
+    radius,
+    timestamp: new Date().toISOString()
+  });
+  
   const allResults: {
     name?: string;
     url?: string;
@@ -74,6 +82,8 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
   }[] = [];
 
   if (types.length === 0) {
+    console.log("[Google Places API] Searching without specific types (all places)");
+    
     const res = await client.placesNearby({
       params: {
         location: { lat, lng },
@@ -81,6 +91,11 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
         radius,
         key: GOOGLE_API_KEY,
       },
+    });
+
+    console.log("[Google Places API] Response for 'all' types:", {
+      resultCount: res.data.results.length,
+      status: res.status
     });
 
     const results = res.data.results.map((r) => ({
@@ -95,7 +110,11 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
 
     allResults.push(...results);
   } else {
+    console.log("[Google Places API] Searching with specific types:", types);
+    
     for (const type of types) {
+      console.log(`[Google Places API] Searching for type: ${type}`);
+      
       const res = await client.placesNearby({
         params: {
           location: { lat, lng },
@@ -104,6 +123,11 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
           type,
           key: GOOGLE_API_KEY,
         },
+      });
+
+      console.log(`[Google Places API] Response for type '${type}':`, {
+        resultCount: res.data.results.length,
+        status: res.status
       });
 
       const results = res.data.results.map((r) => ({
@@ -119,6 +143,14 @@ const getPlacesNearby = async (lat: number, lng: number, types: string[]) => {
       allResults.push(...results);
     }
   }
+
+  console.log("[Google Places API] Final results summary:", {
+    totalResults: allResults.length,
+    resultsByType: allResults.reduce((acc, result) => {
+      acc[result.type] = (acc[result.type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>)
+  });
 
   return allResults;
 };
