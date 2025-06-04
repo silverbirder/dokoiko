@@ -1,8 +1,9 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { useEffect } from "react";
 
 L.Icon.Default.mergeOptions({
   iconUrl: "/leaflet/marker-icon.png",
@@ -20,6 +21,16 @@ type Props = {
   markers?: MarkerData[];
 };
 
+const MapCenterUpdater = ({ position }: { position?: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (position) {
+      map.setView(position, map.getZoom());
+    }
+  }, [position, map]);
+  return null;
+};
+
 export const Map = ({ position, markers }: Props) => {
   return (
     <MapContainer
@@ -28,6 +39,7 @@ export const Map = ({ position, markers }: Props) => {
       zoom={13}
       scrollWheelZoom={false}
     >
+      <MapCenterUpdater position={position} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
