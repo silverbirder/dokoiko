@@ -7,6 +7,18 @@ import { radius } from "./data";
 const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
 const client = new Client({});
 
+const generateGoogleMapsUrl = (
+  name?: string,
+  latitude?: number,
+  longitude?: number,
+): string => {
+  if (latitude && longitude) {
+    const query = name ? encodeURIComponent(name) : `${latitude},${longitude}`;
+    return `https://www.google.com/maps/search/${query}/@${latitude},${longitude},17z`;
+  }
+  return "";
+};
+
 export const googleRouter = createTRPCRouter({
   geocode: publicProcedure
     .input(z.object({ address: z.string() }))
@@ -123,7 +135,14 @@ const getPlacesNearby = async (
 
     const results = res.data.results.map((r) => ({
       name: r.name,
-      url: r.website ?? r.url,
+      url:
+        r.website ??
+        r.url ??
+        generateGoogleMapsUrl(
+          r.name,
+          r.geometry?.location.lat,
+          r.geometry?.location.lng,
+        ),
       image: r.photos?.[0]?.photo_reference,
       address: r.vicinity,
       latitude: r.geometry?.location.lat,
@@ -169,7 +188,14 @@ const getPlacesNearby = async (
 
       const results = res.data.results.map((r) => ({
         name: r.name,
-        url: r.website ?? r.url,
+        url:
+          r.website ??
+          r.url ??
+          generateGoogleMapsUrl(
+            r.name,
+            r.geometry?.location.lat,
+            r.geometry?.location.lng,
+          ),
         image: r.photos?.[0]?.photo_reference,
         address: r.vicinity,
         latitude: r.geometry?.location.lat,

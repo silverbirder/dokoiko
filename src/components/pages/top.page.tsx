@@ -175,10 +175,16 @@ export const TopPage = ({
                   item.position && handleCardClick(item.position, index)
                 }
               >
-                <CardHeader>
-                  {item.name && <CardTitle>{item.name}</CardTitle>}
+                <CardHeader className="pb-3">
+                  {item.name && (
+                    <CardTitle className="text-base leading-tight break-words whitespace-normal">
+                      {item.name}
+                    </CardTitle>
+                  )}
                   {item.address && (
-                    <CardDescription>{item.address}</CardDescription>
+                    <CardDescription className="text-sm leading-relaxed break-words whitespace-normal text-gray-600">
+                      {item.address}
+                    </CardDescription>
                   )}
                 </CardHeader>
                 <CardContent>
@@ -204,26 +210,32 @@ export const TopPage = ({
                     </div>
                   )}
                 </CardContent>
-                {item.type === "yahoo" && <YahooCredit />}
-                {item.url ? (
-                  <CardFooter className="flex items-center justify-between">
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      詳細を見る
-                    </a>
-                    {item.type && <Badge>{item.type}</Badge>}
-                  </CardFooter>
-                ) : (
-                  item.type && (
-                    <CardFooter className="mt-1 flex justify-end">
-                      <Badge>{item.type}</Badge>
-                    </CardFooter>
-                  )
-                )}
+                <CardFooter className="flex flex-col gap-3 pt-4">
+                  <div className="flex w-full items-center justify-between">
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-sm text-blue-600 transition-colors hover:text-blue-800 hover:underline"
+                      >
+                        詳細を見る
+                      </a>
+                    ) : (
+                      <div></div>
+                    )}
+                    {item.type && (
+                      <Badge variant="secondary" className="text-xs">
+                        {item.type}
+                      </Badge>
+                    )}
+                  </div>
+                  {item.type === "yahoo" && (
+                    <div className="w-full">
+                      <YahooCredit />
+                    </div>
+                  )}
+                </CardFooter>
               </Card>
             ))}
             {isMore && (

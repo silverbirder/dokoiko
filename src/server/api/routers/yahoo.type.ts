@@ -54,6 +54,7 @@ type Property = {
     MobileUrl1?: string;
     ReviewUrl?: string;
     Image1?: string;
+    YUrl?: string;
   };
   Style?: StyleType;
 };

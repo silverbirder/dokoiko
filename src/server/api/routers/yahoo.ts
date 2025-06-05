@@ -98,9 +98,10 @@ const getYahooLocalSearch = async (
         }
       }
     }
+
     return {
       name: item.Name,
-      url: item.Property?.Detail?.PcUrl1 ?? item.Property?.Detail?.MobileUrl1,
+      url: item.Property?.Detail?.YUrl,
       image: imageUrl,
       address: item.Property?.Address,
       latitude: lat,
