@@ -68,6 +68,7 @@ const getYahooLocalSearch = async (
     sort: "hybrid",
     detail: "full",
     dist: (radius / 1000).toString(),
+    image: "true",
   };
 
   const params = new URLSearchParams(baseParams);
