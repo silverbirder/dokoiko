@@ -39,6 +39,7 @@ const getYahooLocalSearch = async (
   category: string,
   page = 1,
 ) => {
+  const now = new Date().getTime();
   console.log("[Yahoo API] getYahooLocalSearch parameters:", {
     lat,
     lng,
@@ -107,6 +108,7 @@ const getYahooLocalSearch = async (
       address: item.Property?.Address,
       latitude: lat,
       longitude: lng,
+      now,
     };
   });
 

@@ -13,16 +13,6 @@ export async function getPageHook({
     ? await api.google.geocode({ address }).catch(() => null)
     : null;
 
-  const yahooData = geocodeResult
-    ? await api.yahoo
-        .searchLocal({
-          lat: geocodeResult.lat,
-          lng: geocodeResult.lng,
-          category,
-        })
-        .catch(() => null)
-    : null;
-
   const googleData = geocodeResult
     ? await api.google
         .searchNearby({
@@ -36,9 +26,19 @@ export async function getPageHook({
         .catch(() => null)
     : null;
 
+  const yahooData = geocodeResult
+    ? await api.yahoo
+        .searchLocal({
+          lat: geocodeResult.lat,
+          lng: geocodeResult.lng,
+          category,
+        })
+        .catch(() => null)
+    : null;
+
   return {
     geocodeResult,
-    yahooData,
     googleData,
+    yahooData,
   };
 }

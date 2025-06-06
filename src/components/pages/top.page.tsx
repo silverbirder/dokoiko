@@ -41,6 +41,7 @@ type Props = {
       address?: string;
       latitude?: number;
       longitude?: number;
+      now: number;
     }>;
     hasNextPage: boolean;
   } | null;
@@ -55,6 +56,7 @@ type Props = {
       latitude?: number;
       longitude?: number;
       type: string;
+      now: number;
     }>;
     types: Array<{
       name: string;

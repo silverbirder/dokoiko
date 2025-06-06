@@ -96,6 +96,7 @@ const getPlacesNearby = async (
   types: { name: string; pageToken?: string }[],
   pageToken?: string,
 ) => {
+  const now = new Date().getTime();
   console.log("[Google Places API] getPlacesNearby parameters:", {
     lat,
     lng,
@@ -113,6 +114,7 @@ const getPlacesNearby = async (
     latitude?: number;
     longitude?: number;
     type: string;
+    now: number;
   }[] = [];
 
   const allTypes: { name: string; nextPageToken: string }[] = [];
@@ -164,6 +166,7 @@ const getPlacesNearby = async (
       latitude: r.geometry?.location.lat,
       longitude: r.geometry?.location.lng,
       type: "all",
+      now,
     }));
 
     allResults.push(...results);
@@ -224,6 +227,7 @@ const getPlacesNearby = async (
         latitude: r.geometry?.location.lat,
         longitude: r.geometry?.location.lng,
         type: type.name,
+        now,
       }));
 
       allResults.push(...results);

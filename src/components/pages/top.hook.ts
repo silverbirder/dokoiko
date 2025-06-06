@@ -27,6 +27,7 @@ type Props = {
       address?: string;
       latitude?: number;
       longitude?: number;
+      now: number;
     }>;
     hasNextPage: boolean;
   } | null;
@@ -41,6 +42,7 @@ type Props = {
       latitude?: number;
       longitude?: number;
       type: string;
+      now: number;
     }>;
     types: Array<{
       name: string;
@@ -110,7 +112,9 @@ export const useTopPage = ({
             : undefined,
       })) ?? [];
 
-    return [...typedGoogleResults, ...typedYahooResults];
+    return [...typedGoogleResults, ...typedYahooResults].sort((a, b) => {
+      return a.now - b.now;
+    });
   }, [yahooData, googleData]);
 
   const isMore = useMemo(
