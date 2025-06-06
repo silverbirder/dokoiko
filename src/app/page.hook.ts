@@ -33,9 +33,9 @@ export async function getPageHook({
         .catch(() => null)
     : null;
 
-  return { 
+  return {
     geocodeResult,
     yahooData,
     googleData,
-   };
+  };
 }

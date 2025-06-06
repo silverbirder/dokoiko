@@ -67,6 +67,7 @@ type Props = {
 };
 
 export const TopPage = ({
+  geocodeResult,
   yahooData,
   googleData,
   onSubmit,
@@ -75,7 +76,6 @@ export const TopPage = ({
   const {
     results,
     markers,
-    centerPosition,
     isMore,
     mapPosition,
     selectedMarkerId,
@@ -90,6 +90,7 @@ export const TopPage = ({
     isAdvancedOptionsOpen,
     setIsAdvancedOptionsOpen,
   } = useTopPage({
+    geocodeResult,
     yahooData,
     googleData,
     onSubmit,
@@ -272,7 +273,9 @@ export const TopPage = ({
         <MapCaller
           markers={markers}
           position={mapPosition}
-          addressPosition={centerPosition}
+          addressPosition={
+            geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined
+          }
           selectedMarkerId={selectedMarkerId}
         />
       </div>

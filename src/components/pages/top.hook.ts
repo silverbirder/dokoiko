@@ -15,6 +15,7 @@ const searchFormSchema = z.object({
 type SearchFormData = z.infer<typeof searchFormSchema>;
 
 type Props = {
+  geocodeResult: { lat: number; lng: number } | null;
   yahooData: {
     lat: number;
     lng: number;
@@ -51,12 +52,13 @@ type Props = {
 };
 
 export const useTopPage = ({
+  geocodeResult,
   yahooData,
   googleData,
   onSubmit,
   initialValues,
 }: Props) => {
-  const { results, markers, centerPosition, isMore } = useMemo(() => {
+  const { results, markers, isMore } = useMemo(() => {
     const typedGoogleResults =
       googleData?.results?.map((item) => ({
         ...item,
@@ -89,18 +91,11 @@ export const useTopPage = ({
         popupText: item.name ?? item.address ?? "",
       }));
 
-    const centerPosition: [number, number] | undefined =
-      yahooData?.lat && yahooData?.lng
-        ? [yahooData.lat, yahooData.lng]
-        : googleData?.lat && googleData?.lng
-          ? [googleData.lat, googleData.lng]
-          : undefined;
-
-    return { results, markers, centerPosition, isMore };
+    return { results, markers, isMore };
   }, [yahooData, googleData]);
 
   const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
-    centerPosition,
+    geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
   );
   const [selectedMarkerId, setSelectedMarkerId] = useState<
     number | undefined
@@ -108,8 +103,10 @@ export const useTopPage = ({
   const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
 
   useEffect(() => {
-    setMapPosition(centerPosition);
-  }, [centerPosition]);
+    setMapPosition(
+      geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
+    );
+  }, [geocodeResult]);
 
   const {
     control,
@@ -183,7 +180,6 @@ export const useTopPage = ({
   return {
     results,
     markers,
-    centerPosition,
     isMore,
     mapPosition,
     selectedMarkerId,
@@ -199,5 +195,3 @@ export const useTopPage = ({
     setIsAdvancedOptionsOpen,
   };
 };
-
-// 不要になったuseProcessDataを削除
