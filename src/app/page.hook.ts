@@ -33,43 +33,9 @@ export async function getPageHook({
         .catch(() => null)
     : null;
 
-  const typedGoogleResults =
-    googleData?.results?.map((item) => ({
-      ...item,
-      type: "google",
-      position:
-        item.latitude && item.longitude
-          ? ([item.latitude, item.longitude] as [number, number])
-          : undefined,
-    })) ?? [];
-  const typedYahooResults =
-    yahooData?.results?.map((item) => ({
-      ...item,
-      type: "yahoo",
-      position:
-        item.latitude && item.longitude
-          ? ([item.latitude, item.longitude] as [number, number])
-          : undefined,
-    })) ?? [];
-
-  const results = [...typedGoogleResults, ...typedYahooResults];
-  const isMore =
-    (yahooData?.hasNextPage ?? false) ||
-    (googleData?.results.some((item) => item.nextPageToken) ?? false);
-
-  const markers = results
-    .filter((item) => item.latitude && item.longitude)
-    .map((item) => ({
-      position: [item.latitude!, item.longitude!] as [number, number],
-      popupText: item.name ?? item.address ?? "",
-    }));
-
-  const centerPosition: [number, number] | undefined =
-    yahooData?.lat && yahooData?.lng
-      ? [yahooData.lat, yahooData.lng]
-      : googleData?.lat && googleData?.lng
-        ? [googleData.lat, googleData.lng]
-        : undefined;
-
-  return { results, markers, centerPosition, isMore };
+  return { 
+    geocodeResult,
+    yahooData,
+    googleData,
+   };
 }

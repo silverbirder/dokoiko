@@ -2,7 +2,7 @@ import { categoryMapping } from "@/server/api/routers/data";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
@@ -15,7 +15,33 @@ const searchFormSchema = z.object({
 type SearchFormData = z.infer<typeof searchFormSchema>;
 
 type Props = {
-  centerPosition?: [number, number];
+  yahooData: {
+    lat: number;
+    lng: number;
+    results: Array<{
+      name: string;
+      url?: string;
+      image?: string;
+      address?: string;
+      latitude?: number;
+      longitude?: number;
+    }>;
+    hasNextPage: boolean;
+  } | null;
+  googleData: {
+    lat: number;
+    lng: number;
+    results: Array<{
+      name?: string;
+      url?: string;
+      image?: string;
+      address?: string;
+      latitude?: number;
+      longitude?: number;
+      type: string;
+      nextPageToken?: string;
+    }>;
+  } | null;
   onSubmit?: (formData: FormData) => void;
   initialValues?: {
     address?: string;
@@ -25,10 +51,54 @@ type Props = {
 };
 
 export const useTopPage = ({
-  centerPosition,
+  yahooData,
+  googleData,
   onSubmit,
   initialValues,
 }: Props) => {
+  const { results, markers, centerPosition, isMore } = useMemo(() => {
+    const typedGoogleResults =
+      googleData?.results?.map((item) => ({
+        ...item,
+        type: "google",
+        position:
+          item.latitude && item.longitude
+            ? ([item.latitude, item.longitude] as [number, number])
+            : undefined,
+      })) ?? [];
+
+    const typedYahooResults =
+      yahooData?.results?.map((item) => ({
+        ...item,
+        type: "yahoo",
+        position:
+          item.latitude && item.longitude
+            ? ([item.latitude, item.longitude] as [number, number])
+            : undefined,
+      })) ?? [];
+
+    const results = [...typedGoogleResults, ...typedYahooResults];
+    const isMore =
+      (yahooData?.hasNextPage ?? false) ||
+      (googleData?.results.some((item) => item.nextPageToken) ?? false);
+
+    const markers = results
+      .filter((item) => item.latitude && item.longitude)
+      .map((item) => ({
+        position: [item.latitude!, item.longitude!] as [number, number],
+        popupText: item.name ?? item.address ?? "",
+      }));
+
+    const centerPosition: [number, number] | undefined =
+      yahooData?.lat && yahooData?.lng
+        ? [yahooData.lat, yahooData.lng]
+        : googleData?.lat && googleData?.lng
+          ? [googleData.lat, googleData.lng]
+          : undefined;
+
+    return { results, markers, centerPosition, isMore };
+  }, [yahooData, googleData]);
+
   const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
     centerPosition,
   );
@@ -111,6 +181,10 @@ export const useTopPage = ({
   );
 
   return {
+    results,
+    markers,
+    centerPosition,
+    isMore,
     mapPosition,
     selectedMarkerId,
     control,
@@ -125,3 +199,5 @@ export const useTopPage = ({
     setIsAdvancedOptionsOpen,
   };
 };
+
+// 不要になったuseProcessDataを削除

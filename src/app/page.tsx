@@ -1,7 +1,7 @@
 import { HydrateClient } from "@/trpc/server";
-import { getPageHook } from "./page.hook";
 import { TopPage } from "@/components";
 import { redirect } from "next/navigation";
+import { getPageHook } from "./page.hook";
 
 type Props = {
   searchParams?: Promise<{
@@ -18,7 +18,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
   const googleTypes = searchParams?.googleTypes
     ? searchParams.googleTypes.split(",")
     : [];
-  const { results, markers, centerPosition, isMore } = await getPageHook({
+  const { geocodeResult, yahooData, googleData } = await getPageHook({
     address,
     category,
     googleTypes,
@@ -40,10 +40,9 @@ export default async function Home({ searchParams: _searchParams }: Props) {
   return (
     <HydrateClient>
       <TopPage
-        results={results}
-        markers={markers}
-        centerPosition={centerPosition}
-        isMore={isMore}
+        geocodeResult={geocodeResult}
+        yahooData={yahooData}
+        googleData={googleData}
         onSubmit={handleSubmit}
         initialValues={{
           address,

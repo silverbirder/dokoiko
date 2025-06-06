@@ -30,20 +30,34 @@ import { useTopPage } from "./top.hook";
 import { Controller } from "react-hook-form";
 
 type Props = {
-  results: Array<{
-    name?: string;
-    address?: string;
-    image?: string;
-    type?: string;
-    url?: string;
-    position?: [number, number];
-  }>;
-  markers: Array<{
-    position: [number, number];
-    popupText: string;
-  }>;
-  centerPosition: [number, number] | undefined;
-  isMore?: boolean;
+  geocodeResult: { lat: number; lng: number } | null;
+  yahooData: {
+    lat: number;
+    lng: number;
+    results: Array<{
+      name: string;
+      url?: string;
+      image?: string;
+      address?: string;
+      latitude?: number;
+      longitude?: number;
+    }>;
+    hasNextPage: boolean;
+  } | null;
+  googleData: {
+    lat: number;
+    lng: number;
+    results: Array<{
+      name?: string;
+      url?: string;
+      image?: string;
+      address?: string;
+      latitude?: number;
+      longitude?: number;
+      type: string;
+      nextPageToken?: string;
+    }>;
+  } | null;
   onSubmit?: (formData: FormData) => void;
   initialValues?: {
     address?: string;
@@ -53,14 +67,16 @@ type Props = {
 };
 
 export const TopPage = ({
-  results,
-  markers,
-  centerPosition,
-  isMore,
+  yahooData,
+  googleData,
   onSubmit,
   initialValues,
 }: Props) => {
   const {
+    results,
+    markers,
+    centerPosition,
+    isMore,
     mapPosition,
     selectedMarkerId,
     control,
@@ -74,7 +90,8 @@ export const TopPage = ({
     isAdvancedOptionsOpen,
     setIsAdvancedOptionsOpen,
   } = useTopPage({
-    centerPosition,
+    yahooData,
+    googleData,
     onSubmit,
     initialValues,
   });
