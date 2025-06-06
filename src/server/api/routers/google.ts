@@ -41,18 +41,16 @@ export const googleRouter = createTRPCRouter({
           )
           .max(3)
           .optional(),
-        pageToken: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, selectedTypes, pageToken } = input;
+      const { lat, lng, selectedTypes } = input;
       const types =
         selectedTypes && selectedTypes.length > 0 ? selectedTypes : [];
       const { results, types: allTypes } = await getPlacesNearby(
         lat,
         lng,
         types,
-        pageToken,
       );
 
       return {
@@ -94,7 +92,6 @@ const getPlacesNearby = async (
   lat: number,
   lng: number,
   types: { name: string; pageToken?: string }[],
-  pageToken?: string,
 ) => {
   const now = new Date().getTime();
   console.log("[Google Places API] getPlacesNearby parameters:", {
@@ -102,7 +99,6 @@ const getPlacesNearby = async (
     lng,
     types,
     radius,
-    pageToken,
     timestamp: new Date().toISOString(),
   });
 
@@ -136,10 +132,6 @@ const getPlacesNearby = async (
       radius,
       key: GOOGLE_API_KEY,
     };
-
-    if (pageToken) {
-      requestParams.pagetoken = pageToken;
-    }
 
     const res = await client.placesNearby({
       params: requestParams,
@@ -185,19 +177,22 @@ const getPlacesNearby = async (
         location: { lat: number; lng: number };
         language: Language;
         radius: number;
-        type: string;
+        type?: string;
         key: string;
         pagetoken?: string;
       } = {
         location: { lat, lng },
         language: Language.ja,
         radius,
-        type: type.name,
         key: GOOGLE_API_KEY,
       };
 
       if (type.pageToken) {
         requestParams.pagetoken = type.pageToken;
+      }
+
+      if (type.name !== "all") {
+        requestParams.type = type.name;
       }
 
       const res = await client.placesNearby({
