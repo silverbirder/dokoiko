@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCallback, useEffect, useState, useMemo } from "react";
+import { api } from "@/trpc/react";
 
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
@@ -53,7 +54,7 @@ type Props = {
 
 export const useTopPage = ({
   geocodeResult,
-  yahooData,
+  yahooData: initialYahooData,
   googleData,
   onSubmit,
   initialValues,
@@ -65,6 +66,8 @@ export const useTopPage = ({
     number | undefined
   >();
   const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [yahooData, setYahooData] = useState(initialYahooData);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -74,9 +77,10 @@ export const useTopPage = ({
       googleTypes: initialValues?.googleTypes ?? [],
     },
   });
-
   const selectedCategory = form.watch("category");
   const googleTypes = form.watch("googleTypes");
+
+  const utils = api.useUtils();
 
   const results = useMemo(() => {
     const typedGoogleResults =
@@ -102,12 +106,7 @@ export const useTopPage = ({
     return [...typedGoogleResults, ...typedYahooResults];
   }, [yahooData, googleData]);
 
-  const isMore = useMemo(
-    () =>
-      (yahooData?.hasNextPage ?? false) ||
-      (googleData?.results.some((item) => item.nextPageToken) ?? false),
-    [yahooData, googleData],
-  );
+  const isMore = useMemo(() => yahooData?.hasNextPage ?? false, [yahooData]);
 
   const markers = useMemo(
     () =>
@@ -146,6 +145,10 @@ export const useTopPage = ({
     }
   }, [selectedCategory, googleTypes, form]);
 
+  useEffect(() => {
+    setYahooData(yahooData);
+  }, [yahooData]);
+
   const handleGoogleTypesChange = useCallback(
     (types: string[]) => {
       form.setValue("googleTypes", types);
@@ -153,7 +156,7 @@ export const useTopPage = ({
     [form],
   );
 
-  const onFormSubmit = useCallback(
+  const handleFormSubmit = useCallback(
     (data: SearchFormData) => {
       if (!onSubmit) return;
       const formData = new FormData();
@@ -169,7 +172,7 @@ export const useTopPage = ({
     [onSubmit],
   );
 
-  const handleSubmit = form.handleSubmit(onFormSubmit);
+  const handleSubmit = form.handleSubmit(handleFormSubmit);
 
   const handleCardClick = useCallback(
     (position: [number, number], index: number) => {
@@ -178,6 +181,20 @@ export const useTopPage = ({
     },
     [],
   );
+
+  const handleMoreClick = useCallback(async () => {
+    const yahooData = await utils.yahoo.searchLocal.fetch({
+      category: initialValues?.category ?? "",
+      lat: geocodeResult?.lat ?? 0,
+      lng: geocodeResult?.lng ?? 0,
+      page: page + 1,
+    });
+    setPage((prev) => prev + 1);
+    setYahooData((prev) => {
+      if (!prev) return yahooData;
+      return { ...yahooData, results: [...prev.results, ...yahooData.results] };
+    });
+  }, [utils, page, geocodeResult, initialValues]);
 
   return {
     form,
@@ -192,6 +209,7 @@ export const useTopPage = ({
     handleSubmit,
     handleGoogleTypesChange,
     handleCardClick,
+    handleMoreClick,
     setIsAdvancedOptionsOpen,
   };
 };

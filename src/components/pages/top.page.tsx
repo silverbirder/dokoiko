@@ -83,12 +83,13 @@ export const TopPage = ({
     isMore,
     mapPosition,
     selectedMarkerId,
-    handleSubmit,
     selectedCategory,
     googleTypes,
+    isAdvancedOptionsOpen,
+    handleSubmit,
     handleGoogleTypesChange,
     handleCardClick,
-    isAdvancedOptionsOpen,
+    handleMoreClick,
     setIsAdvancedOptionsOpen,
   } = useTopPage({
     geocodeResult,
@@ -262,8 +263,9 @@ export const TopPage = ({
                 <Button
                   variant="outline"
                   className="h-full bg-white/90 backdrop-blur-sm"
+                  onClick={handleMoreClick}
                 >
-                  もっと見る(未実装)
+                  もっと見る
                 </Button>
               </div>
             )}
