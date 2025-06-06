@@ -146,8 +146,8 @@ export const useTopPage = ({
   }, [selectedCategory, googleTypes, form]);
 
   useEffect(() => {
-    setYahooData(yahooData);
-  }, [yahooData]);
+    setYahooData(initialYahooData);
+  }, [initialYahooData]);
 
   const handleGoogleTypesChange = useCallback(
     (types: string[]) => {
