@@ -58,7 +58,27 @@ export const useTopPage = ({
   onSubmit,
   initialValues,
 }: Props) => {
-  const { results, markers, isMore } = useMemo(() => {
+  const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
+    geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
+  );
+  const [selectedMarkerId, setSelectedMarkerId] = useState<
+    number | undefined
+  >();
+  const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
+
+  const form = useForm<SearchFormData>({
+    resolver: zodResolver(searchFormSchema),
+    defaultValues: {
+      address: initialValues?.address ?? "",
+      category: initialValues?.category ?? "",
+      googleTypes: initialValues?.googleTypes ?? [],
+    },
+  });
+
+  const selectedCategory = form.watch("category");
+  const googleTypes = form.watch("googleTypes");
+
+  const results = useMemo(() => {
     const typedGoogleResults =
       googleData?.results?.map((item) => ({
         ...item,
@@ -79,40 +99,26 @@ export const useTopPage = ({
             : undefined,
       })) ?? [];
 
-    const results = [...typedGoogleResults, ...typedYahooResults];
-    const isMore =
-      (yahooData?.hasNextPage ?? false) ||
-      (googleData?.results.some((item) => item.nextPageToken) ?? false);
-
-    const markers = results
-      .filter((item) => item.latitude && item.longitude)
-      .map((item) => ({
-        position: [item.latitude!, item.longitude!] as [number, number],
-        popupText: item.name ?? item.address ?? "",
-      }));
-
-    return { results, markers, isMore };
+    return [...typedGoogleResults, ...typedYahooResults];
   }, [yahooData, googleData]);
 
-  const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
-    geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
+  const isMore = useMemo(
+    () =>
+      (yahooData?.hasNextPage ?? false) ||
+      (googleData?.results.some((item) => item.nextPageToken) ?? false),
+    [yahooData, googleData],
   );
-  const [selectedMarkerId, setSelectedMarkerId] = useState<
-    number | undefined
-  >();
-  const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
 
-  const form = useForm<SearchFormData>({
-    resolver: zodResolver(searchFormSchema),
-    defaultValues: {
-      address: initialValues?.address ?? "",
-      category: initialValues?.category ?? "",
-      googleTypes: initialValues?.googleTypes ?? [],
-    },
-  });
-
-  const selectedCategory = form.watch("category");
-  const googleTypes = form.watch("googleTypes");
+  const markers = useMemo(
+    () =>
+      results
+        .filter((item) => item.latitude && item.longitude)
+        .map((item) => ({
+          position: [item.latitude!, item.longitude!] as [number, number],
+          popupText: item.name ?? item.address ?? "",
+        })),
+    [results],
+  );
 
   useEffect(() => {
     setMapPosition(
