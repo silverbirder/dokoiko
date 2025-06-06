@@ -28,7 +28,10 @@ export async function getPageHook({
         .searchNearby({
           lat: geocodeResult.lat,
           lng: geocodeResult.lng,
-          selectedTypes: googleTypes.length > 0 ? googleTypes : undefined,
+          selectedTypes:
+            googleTypes.length > 0
+              ? googleTypes.map((type) => ({ name: type }))
+              : undefined,
         })
         .catch(() => null)
     : null;

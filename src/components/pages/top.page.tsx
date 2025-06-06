@@ -55,7 +55,10 @@ type Props = {
       latitude?: number;
       longitude?: number;
       type: string;
-      nextPageToken?: string;
+    }>;
+    types: Array<{
+      name: string;
+      nextPageToken: string;
     }>;
   } | null;
   onSubmit?: (formData: FormData) => void;

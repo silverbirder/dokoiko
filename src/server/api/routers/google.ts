@@ -32,7 +32,15 @@ export const googleRouter = createTRPCRouter({
       z.object({
         lat: z.number(),
         lng: z.number(),
-        selectedTypes: z.array(z.string()).max(3).optional(),
+        selectedTypes: z
+          .array(
+            z.object({
+              name: z.string(),
+              pageToken: z.string().optional(),
+            }),
+          )
+          .max(3)
+          .optional(),
         pageToken: z.string().optional(),
       }),
     )
@@ -40,11 +48,18 @@ export const googleRouter = createTRPCRouter({
       const { lat, lng, selectedTypes, pageToken } = input;
       const types =
         selectedTypes && selectedTypes.length > 0 ? selectedTypes : [];
-      const { results } = await getPlacesNearby(lat, lng, types, pageToken);
+      const { results, types: allTypes } = await getPlacesNearby(
+        lat,
+        lng,
+        types,
+        pageToken,
+      );
+
       return {
         lat,
         lng,
         results,
+        types: allTypes,
       };
     }),
 });
@@ -78,7 +93,7 @@ const geocodeAddress = async (
 const getPlacesNearby = async (
   lat: number,
   lng: number,
-  types: string[],
+  types: { name: string; pageToken?: string }[],
   pageToken?: string,
 ) => {
   console.log("[Google Places API] getPlacesNearby parameters:", {
@@ -98,8 +113,9 @@ const getPlacesNearby = async (
     latitude?: number;
     longitude?: number;
     type: string;
-    nextPageToken?: string;
   }[] = [];
+
+  const allTypes: { name: string; nextPageToken: string }[] = [];
 
   if (types.length === 0) {
     console.log(
@@ -147,16 +163,20 @@ const getPlacesNearby = async (
       address: r.vicinity,
       latitude: r.geometry?.location.lat,
       longitude: r.geometry?.location.lng,
-      nextPageToken: res.data.next_page_token,
       type: "all",
     }));
 
     allResults.push(...results);
+    if (res.data.next_page_token) {
+      allTypes.push({ name: "all", nextPageToken: res.data.next_page_token });
+    }
   } else {
     console.log("[Google Places API] Searching with specific types:", types);
 
     for (const type of types) {
-      console.log(`[Google Places API] Searching for type: ${type}`);
+      console.log(
+        `[Google Places API] Searching for type: ${type.name} - ${type.pageToken}`,
+      );
 
       const requestParams: {
         location: { lat: number; lng: number };
@@ -169,22 +189,25 @@ const getPlacesNearby = async (
         location: { lat, lng },
         language: Language.ja,
         radius,
-        type,
+        type: type.name,
         key: GOOGLE_API_KEY,
       };
 
-      if (pageToken) {
-        requestParams.pagetoken = pageToken;
+      if (type.pageToken) {
+        requestParams.pagetoken = type.pageToken;
       }
 
       const res = await client.placesNearby({
         params: requestParams,
       });
 
-      console.log(`[Google Places API] Response for type '${type}':`, {
-        resultCount: res.data.results.length,
-        status: res.status,
-      });
+      console.log(
+        `[Google Places API] Response for type '${type.name} - ${type.pageToken}':`,
+        {
+          resultCount: res.data.results.length,
+          status: res.status,
+        },
+      );
 
       const results = res.data.results.map((r) => ({
         name: r.name,
@@ -200,24 +223,22 @@ const getPlacesNearby = async (
         address: r.vicinity,
         latitude: r.geometry?.location.lat,
         longitude: r.geometry?.location.lng,
-        type,
-        nextPageToken: res.data.next_page_token,
+        type: type.name,
       }));
 
       allResults.push(...results);
+      if (res.data.next_page_token) {
+        allTypes.push({
+          name: type.name,
+          nextPageToken: res.data.next_page_token,
+        });
+      }
     }
   }
 
   console.log("[Google Places API] Final results summary:", {
     totalResults: allResults.length,
-    resultsByType: allResults.reduce(
-      (acc, result) => {
-        acc[result.type] = (acc[result.type] ?? 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    ),
   });
 
-  return { results: allResults };
+  return { results: allResults, types: allTypes };
 };

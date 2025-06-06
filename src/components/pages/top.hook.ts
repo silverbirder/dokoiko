@@ -41,7 +41,10 @@ type Props = {
       latitude?: number;
       longitude?: number;
       type: string;
-      nextPageToken?: string;
+    }>;
+    types: Array<{
+      name: string;
+      nextPageToken: string;
     }>;
   } | null;
   onSubmit?: (formData: FormData) => void;
@@ -55,7 +58,7 @@ type Props = {
 export const useTopPage = ({
   geocodeResult,
   yahooData: initialYahooData,
-  googleData,
+  googleData: initialGoogleData,
   onSubmit,
   initialValues,
 }: Props) => {
@@ -66,8 +69,12 @@ export const useTopPage = ({
     number | undefined
   >();
   const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
-  const [page, setPage] = useState(1);
   const [yahooData, setYahooData] = useState(initialYahooData);
+  const [page, setPage] = useState(1);
+  const [googleData, setGoogleData] = useState(initialGoogleData);
+  const [selectedTypes, setSelectedTypes] = useState<
+    { name: string; pageToken: string }[]
+  >([]);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -106,7 +113,10 @@ export const useTopPage = ({
     return [...typedGoogleResults, ...typedYahooResults];
   }, [yahooData, googleData]);
 
-  const isMore = useMemo(() => yahooData?.hasNextPage ?? false, [yahooData]);
+  const isMore = useMemo(
+    () => yahooData?.hasNextPage ?? selectedTypes.length > 0,
+    [yahooData, selectedTypes],
+  );
 
   const markers = useMemo(
     () =>
@@ -149,6 +159,16 @@ export const useTopPage = ({
     setYahooData(initialYahooData);
   }, [initialYahooData]);
 
+  useEffect(() => {
+    setGoogleData(initialGoogleData);
+    setSelectedTypes(
+      initialGoogleData?.types.map((item) => ({
+        name: item.name,
+        pageToken: item.nextPageToken,
+      })) ?? [],
+    );
+  }, [initialGoogleData]);
+
   const handleGoogleTypesChange = useCallback(
     (types: string[]) => {
       form.setValue("googleTypes", types);
@@ -183,18 +203,39 @@ export const useTopPage = ({
   );
 
   const handleMoreClick = useCallback(async () => {
-    const yahooData = await utils.yahoo.searchLocal.fetch({
+    const localGoogleData = await utils.google.searchNearby.fetch({
+      lat: geocodeResult?.lat ?? 0,
+      lng: geocodeResult?.lng ?? 0,
+      selectedTypes: selectedTypes,
+    });
+    const localYahooData = await utils.yahoo.searchLocal.fetch({
       category: initialValues?.category ?? "",
       lat: geocodeResult?.lat ?? 0,
       lng: geocodeResult?.lng ?? 0,
       page: page + 1,
     });
+    setSelectedTypes(
+      localGoogleData.types.map((item) => ({
+        name: item.name,
+        pageToken: item.nextPageToken,
+      })),
+    );
+    setGoogleData((prev) => {
+      if (!prev) return localGoogleData;
+      return {
+        ...localGoogleData,
+        results: [...prev.results, ...localGoogleData.results],
+      };
+    });
     setPage((prev) => prev + 1);
     setYahooData((prev) => {
-      if (!prev) return yahooData;
-      return { ...yahooData, results: [...prev.results, ...yahooData.results] };
+      if (!prev) return localYahooData;
+      return {
+        ...localYahooData,
+        results: [...prev.results, ...localYahooData.results],
+      };
     });
-  }, [utils, page, geocodeResult, initialValues]);
+  }, [utils, page, geocodeResult, initialValues, selectedTypes]);
 
   return {
     form,
