@@ -74,18 +74,19 @@ export const TopPage = ({
   initialValues,
 }: Props) => {
   const {
+    form: {
+      control,
+      formState: { errors },
+    },
     results,
     markers,
     isMore,
     mapPosition,
     selectedMarkerId,
-    control,
     handleSubmit,
-    errors,
     selectedCategory,
     googleTypes,
     handleGoogleTypesChange,
-    onFormSubmit,
     handleCardClick,
     isAdvancedOptionsOpen,
     setIsAdvancedOptionsOpen,
@@ -100,7 +101,7 @@ export const TopPage = ({
   return (
     <div className="relative h-screen w-full">
       <main className="relative z-10 mx-auto max-w-xl p-4">
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex gap-1">
             <Controller
               name="address"

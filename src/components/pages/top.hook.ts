@@ -102,19 +102,7 @@ export const useTopPage = ({
   >();
   const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
 
-  useEffect(() => {
-    setMapPosition(
-      geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
-    );
-  }, [geocodeResult]);
-
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<SearchFormData>({
+  const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
       address: initialValues?.address ?? "",
@@ -123,13 +111,19 @@ export const useTopPage = ({
     },
   });
 
-  const selectedCategory = watch("category");
-  const googleTypes = watch("googleTypes");
+  const selectedCategory = form.watch("category");
+  const googleTypes = form.watch("googleTypes");
+
+  useEffect(() => {
+    setMapPosition(
+      geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
+    );
+  }, [geocodeResult]);
 
   useEffect(() => {
     if (!selectedCategory) {
       if (googleTypes.length > 0) {
-        setValue("googleTypes", []);
+        form.setValue("googleTypes", []);
       }
       return;
     }
@@ -142,15 +136,15 @@ export const useTopPage = ({
     );
 
     if (filteredTypes.length !== googleTypes.length) {
-      setValue("googleTypes", filteredTypes);
+      form.setValue("googleTypes", filteredTypes);
     }
-  }, [selectedCategory, googleTypes, setValue]);
+  }, [selectedCategory, googleTypes, form]);
 
   const handleGoogleTypesChange = useCallback(
     (types: string[]) => {
-      setValue("googleTypes", types);
+      form.setValue("googleTypes", types);
     },
-    [setValue],
+    [form],
   );
 
   const onFormSubmit = useCallback(
@@ -169,6 +163,8 @@ export const useTopPage = ({
     [onSubmit],
   );
 
+  const handleSubmit = form.handleSubmit(onFormSubmit);
+
   const handleCardClick = useCallback(
     (position: [number, number], index: number) => {
       setMapPosition(position);
@@ -178,20 +174,18 @@ export const useTopPage = ({
   );
 
   return {
+    form,
     results,
     markers,
     isMore,
     mapPosition,
     selectedMarkerId,
-    control,
-    handleSubmit,
-    errors,
     selectedCategory,
     googleTypes,
-    handleGoogleTypesChange,
-    onFormSubmit,
-    handleCardClick,
     isAdvancedOptionsOpen,
+    handleSubmit,
+    handleGoogleTypesChange,
+    handleCardClick,
     setIsAdvancedOptionsOpen,
   };
 };
