@@ -15,7 +15,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
   GoogleImage,
-  GoogleTypeSelector,
+  SearchOptionSelector,
   Input,
   MapCaller,
   Select,
@@ -68,6 +68,7 @@ type Props = {
     address?: string;
     category?: string;
     googleTypes?: string[];
+    yahooGenres?: string[];
   };
 };
 
@@ -90,9 +91,11 @@ export const TopPage = ({
     selectedMarkerId,
     selectedCategory,
     googleTypes,
+    yahooGenres,
     isAdvancedOptionsOpen,
     handleSubmit,
     handleGoogleTypesChange,
+    handleYahooGenresChange,
     handleCardClick,
     handleMoreClick,
     setIsAdvancedOptionsOpen,
@@ -175,14 +178,21 @@ export const TopPage = ({
                   {errors.category.message}
                 </p>
               )}
-              <GoogleTypeSelector
-                selectedTypes={googleTypes}
+              <SearchOptionSelector
+                selectedGoogleTypes={googleTypes}
+                selectedYahooTypes={yahooGenres}
                 selectedCategory={selectedCategory ?? ""}
-                onSelectedTypesChange={handleGoogleTypesChange}
+                onSelectedGoogleTypesChange={handleGoogleTypesChange}
+                onSelectedYahooTypesChange={handleYahooGenresChange}
               />
               {errors.googleTypes && (
                 <p className="text-sm text-red-500">
                   {errors.googleTypes.message}
+                </p>
+              )}
+              {errors.yahooGenres && (
+                <p className="text-sm text-red-500">
+                  {errors.yahooGenres.message}
                 </p>
               )}
             </CollapsibleContent>

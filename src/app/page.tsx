@@ -8,6 +8,7 @@ type Props = {
     address?: string;
     category?: string;
     googleTypes?: string;
+    yahooGenres?: string;
   }>;
 };
 
@@ -18,10 +19,14 @@ export default async function Home({ searchParams: _searchParams }: Props) {
   const googleTypes = searchParams?.googleTypes
     ? searchParams.googleTypes.split(",")
     : [];
+  const yahooGenres = searchParams?.yahooGenres
+    ? searchParams.yahooGenres.split(",")
+    : [];
   const { geocodeResult, yahooData, googleData } = await getPageHook({
     address,
     category,
     googleTypes,
+    yahooGenres,
   });
 
   async function handleSubmit(formData: FormData) {
@@ -29,11 +34,14 @@ export default async function Home({ searchParams: _searchParams }: Props) {
     const address = formData.get("address") as string;
     const category = formData.get("category") as string;
     const googleTypes = formData.getAll("googleTypes") as string[];
+    const yahooGenres = formData.getAll("yahooGenres") as string[];
     const params = new URLSearchParams();
     if (address) params.set("address", address);
     if (category) params.set("category", category);
     if (googleTypes.length > 0)
       params.set("googleTypes", googleTypes.join(","));
+    if (yahooGenres.length > 0)
+      params.set("yahooGenres", yahooGenres.join(","));
     redirect(`/?${params.toString()}`);
   }
 
@@ -48,6 +56,7 @@ export default async function Home({ searchParams: _searchParams }: Props) {
           address,
           category,
           googleTypes,
+          yahooGenres,
         }}
       />
     </HydrateClient>

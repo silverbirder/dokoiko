@@ -4,10 +4,12 @@ export async function getPageHook({
   address,
   category,
   googleTypes,
+  yahooGenres,
 }: {
   address: string;
   category: string;
   googleTypes: string[];
+  yahooGenres: string[];
 }) {
   const geocodeResult = address
     ? await api.google.geocode({ address }).catch(() => null)
@@ -32,6 +34,7 @@ export async function getPageHook({
           lat: geocodeResult.lat,
           lng: geocodeResult.lng,
           category,
+          selectedGenres: yahooGenres.length > 0 ? yahooGenres : undefined,
         })
         .catch(() => null)
     : null;

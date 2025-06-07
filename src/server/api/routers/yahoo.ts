@@ -14,15 +14,17 @@ export const yahooRouter = createTRPCRouter({
         lng: z.number(),
         category: z.string(),
         page: z.number().default(1),
+        selectedGenres: z.array(z.string()).max(3).optional(),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, category, page } = input;
+      const { lat, lng, category, page, selectedGenres } = input;
       const { results, hasNextPage } = await getYahooLocalSearch(
         lat,
         lng,
         category,
         page,
+        selectedGenres,
       );
       return {
         lat,
@@ -38,6 +40,7 @@ const getYahooLocalSearch = async (
   lng: number,
   category: string,
   page = 1,
+  selectedGenres?: string[],
 ) => {
   const now = new Date().getTime();
   console.log("[Yahoo API] getYahooLocalSearch parameters:", {
@@ -45,18 +48,24 @@ const getYahooLocalSearch = async (
     lng,
     category,
     page,
+    selectedGenres,
     timestamp: new Date().toISOString(),
   });
 
   const url = "https://map.yahooapis.jp/search/local/V1/localSearch";
   const categoryConfig =
     categoryMapping[category as keyof typeof categoryMapping];
-  const genreCodes = categoryConfig?.yahoo;
+  
+  let genreCodes = selectedGenres;
+  if (!genreCodes || genreCodes.length === 0) {
+    genreCodes = categoryConfig?.yahoo;
+  }
 
   console.log("[Yahoo API] Category mapping:", {
     category,
     categoryConfig,
-    genreCodes,
+    selectedGenres,
+    finalGenreCodes: genreCodes,
   });
 
   const baseParams = {
@@ -69,7 +78,7 @@ const getYahooLocalSearch = async (
     sort: "hybrid",
     detail: "full",
     dist: (radius / 1000).toString(),
-    image: "true",
+    // image: "true",
   };
 
   const params = new URLSearchParams(baseParams);

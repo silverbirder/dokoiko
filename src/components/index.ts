@@ -1,5 +1,5 @@
 export * from "./google-image";
-export * from "./google-type-selector";
+export * from "./search-option-selector";
 export * from "./map";
 export * from "./pages";
 export * from "./post";

@@ -11,6 +11,9 @@ const searchFormSchema = z.object({
   googleTypes: z
     .array(z.string())
     .max(3, "Google検索オプションは最大3つまでです"),
+  yahooGenres: z
+    .array(z.string())
+    .max(3, "Yahoo検索オプションは最大3つまでです"),
 });
 
 type SearchFormData = z.infer<typeof searchFormSchema>;
@@ -54,6 +57,7 @@ type Props = {
     address?: string;
     category?: string;
     googleTypes?: string[];
+    yahooGenres?: string[];
   };
 };
 
@@ -84,10 +88,12 @@ export const useTopPage = ({
       address: initialValues?.address ?? "",
       category: initialValues?.category ?? "",
       googleTypes: initialValues?.googleTypes ?? [],
+      yahooGenres: initialValues?.yahooGenres ?? [],
     },
   });
   const selectedCategory = form.watch("category");
   const googleTypes = form.watch("googleTypes");
+  const yahooGenres = form.watch("yahooGenres");
 
   const utils = api.useUtils();
 
@@ -144,20 +150,36 @@ export const useTopPage = ({
       if (googleTypes.length > 0) {
         form.setValue("googleTypes", []);
       }
+      if (yahooGenres.length > 0) {
+        form.setValue("yahooGenres", []);
+      }
       return;
     }
 
     const categoryConfig =
       categoryMapping[selectedCategory as keyof typeof categoryMapping];
-    const availableTypes = categoryConfig?.google || [];
-    const filteredTypes = googleTypes.filter((type) =>
-      availableTypes.includes(type),
+    const availableGoogleTypes = categoryConfig?.google || [];
+    const availableYahooTypes = categoryConfig?.yahoo || [];
+
+    const filteredGoogleTypes = googleTypes.filter((type) =>
+      availableGoogleTypes.includes(type),
     );
 
-    if (filteredTypes.length !== googleTypes.length) {
-      form.setValue("googleTypes", filteredTypes);
+    const filteredYahooGenres = yahooGenres.filter((genre) => {
+      return availableYahooTypes.some((categoryCode) =>
+        // 先頭の文字列が一致するかどうかをチェック
+        genre.startsWith(categoryCode),
+      );
+    });
+
+    if (filteredGoogleTypes.length !== googleTypes.length) {
+      form.setValue("googleTypes", filteredGoogleTypes);
     }
-  }, [selectedCategory, googleTypes, form]);
+
+    if (filteredYahooGenres.length !== yahooGenres.length) {
+      form.setValue("yahooGenres", filteredYahooGenres);
+    }
+  }, [selectedCategory, googleTypes, yahooGenres, form]);
 
   useEffect(() => {
     setYahooData(initialYahooData);
@@ -180,6 +202,13 @@ export const useTopPage = ({
     [form],
   );
 
+  const handleYahooGenresChange = useCallback(
+    (genres: string[]) => {
+      form.setValue("yahooGenres", genres);
+    },
+    [form],
+  );
+
   const handleFormSubmit = useCallback(
     (data: SearchFormData) => {
       if (!onSubmit) return;
@@ -190,6 +219,9 @@ export const useTopPage = ({
       }
       data.googleTypes.forEach((type) => {
         formData.append("googleTypes", type);
+      });
+      data.yahooGenres.forEach((genre) => {
+        formData.append("yahooGenres", genre);
       });
       onSubmit(formData);
     },
@@ -217,6 +249,10 @@ export const useTopPage = ({
       lat: geocodeResult?.lat ?? 0,
       lng: geocodeResult?.lng ?? 0,
       page: page + 1,
+      selectedGenres:
+        initialValues?.yahooGenres && initialValues.yahooGenres.length > 0
+          ? initialValues.yahooGenres
+          : undefined,
     });
     setSelectedTypes(
       localGoogleData.types.map((item) => ({
@@ -250,9 +286,11 @@ export const useTopPage = ({
     selectedMarkerId,
     selectedCategory,
     googleTypes,
+    yahooGenres,
     isAdvancedOptionsOpen,
     handleSubmit,
     handleGoogleTypesChange,
+    handleYahooGenresChange,
     handleCardClick,
     handleMoreClick,
     setIsAdvancedOptionsOpen,
