@@ -3,6 +3,11 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { Client, Language } from "@googlemaps/google-maps-services-js";
 import { radius } from "./data";
+import type { 
+  LatLng, 
+  GoogleSearchResult, 
+  GoogleTypeSelection 
+} from "@/types/common";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
 const client = new Client({});
@@ -64,7 +69,7 @@ export const googleRouter = createTRPCRouter({
 
 const geocodeAddress = async (
   address: string,
-): Promise<{ lat: number; lng: number } | null> => {
+): Promise<LatLng | null> => {
   try {
     const response = await client.geocode({
       params: {
@@ -82,7 +87,7 @@ const geocodeAddress = async (
       }
     }
     return null;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to geocode address");
   }
 };
@@ -90,19 +95,10 @@ const geocodeAddress = async (
 const getPlacesNearby = async (
   lat: number,
   lng: number,
-  types: { name: string; pageToken?: string }[],
+  types: GoogleTypeSelection[],
 ) => {
   const now = new Date().getTime();
-  const allResults: {
-    name?: string;
-    url?: string;
-    image?: string;
-    address?: string;
-    latitude?: number;
-    longitude?: number;
-    type: string;
-    now: number;
-  }[] = [];
+  const allResults: GoogleSearchResult[] = [];
 
   const allTypes: { name: string; nextPageToken: string }[] = [];
 

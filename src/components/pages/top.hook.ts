@@ -4,6 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { api } from "@/trpc/react";
+import type { 
+  LatLng, 
+  GoogleData, 
+  YahooData, 
+  InitialValues,
+  Position,
+  GoogleTypeSelection,
+  UnifiedSearchResult,
+  MarkerData
+} from "@/types/common";
 
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
@@ -19,46 +29,11 @@ const searchFormSchema = z.object({
 type SearchFormData = z.infer<typeof searchFormSchema>;
 
 type Props = {
-  geocodeResult: { lat: number; lng: number } | null;
-  yahooData: {
-    lat: number;
-    lng: number;
-    results: Array<{
-      name: string;
-      url?: string;
-      image?: string;
-      address?: string;
-      latitude?: number;
-      longitude?: number;
-      now: number;
-    }>;
-    hasNextPage: boolean;
-  } | null;
-  googleData: {
-    lat: number;
-    lng: number;
-    results: Array<{
-      name?: string;
-      url?: string;
-      image?: string;
-      address?: string;
-      latitude?: number;
-      longitude?: number;
-      type: string;
-      now: number;
-    }>;
-    types: Array<{
-      name: string;
-      nextPageToken: string;
-    }>;
-  } | null;
+  geocodeResult: LatLng | null;
+  yahooData: YahooData | null;
+  googleData: GoogleData | null;
   onSubmit?: (formData: FormData) => void;
-  initialValues?: {
-    address?: string;
-    category?: string;
-    googleTypes?: string[];
-    yahooGenres?: string[];
-  };
+  initialValues?: InitialValues;
 };
 
 export const useTopPage = ({
@@ -68,7 +43,7 @@ export const useTopPage = ({
   onSubmit,
   initialValues,
 }: Props) => {
-  const [mapPosition, setMapPosition] = useState<[number, number] | undefined>(
+  const [mapPosition, setMapPosition] = useState<Position | undefined>(
     geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
   );
   const [selectedMarkerId, setSelectedMarkerId] = useState<
@@ -78,9 +53,9 @@ export const useTopPage = ({
   const [yahooData, setYahooData] = useState(initialYahooData);
   const [page, setPage] = useState(1);
   const [googleData, setGoogleData] = useState(initialGoogleData);
-  const [selectedTypes, setSelectedTypes] = useState<
-    { name: string; pageToken: string }[]
-  >([]);
+  const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>(
+    [],
+  );
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -97,24 +72,24 @@ export const useTopPage = ({
 
   const utils = api.useUtils();
 
-  const results = useMemo(() => {
-    const typedGoogleResults =
+  const results = useMemo((): UnifiedSearchResult[] => {
+    const typedGoogleResults: UnifiedSearchResult[] =
       googleData?.results?.map((item) => ({
         ...item,
-        type: "google",
+        type: "google" as const,
         position:
           item.latitude && item.longitude
-            ? ([item.latitude, item.longitude] as [number, number])
+            ? ([item.latitude, item.longitude] as Position)
             : undefined,
       })) ?? [];
 
-    const typedYahooResults =
+    const typedYahooResults: UnifiedSearchResult[] =
       yahooData?.results?.map((item) => ({
         ...item,
-        type: "yahoo",
+        type: "yahoo" as const,
         position:
           item.latitude && item.longitude
-            ? ([item.latitude, item.longitude] as [number, number])
+            ? ([item.latitude, item.longitude] as Position)
             : undefined,
       })) ?? [];
 
@@ -129,11 +104,11 @@ export const useTopPage = ({
   );
 
   const markers = useMemo(
-    () =>
+    (): MarkerData[] =>
       results
         .filter((item) => item.latitude && item.longitude)
         .map((item) => ({
-          position: [item.latitude!, item.longitude!] as [number, number],
+          position: [item.latitude!, item.longitude!] as Position,
           popupText: item.name ?? item.address ?? "",
         })),
     [results],
@@ -231,7 +206,7 @@ export const useTopPage = ({
   const handleSubmit = form.handleSubmit(handleFormSubmit);
 
   const handleCardClick = useCallback(
-    (position: [number, number], index: number) => {
+    (position: Position, index: number) => {
       setMapPosition(position);
       setSelectedMarkerId(index);
     },

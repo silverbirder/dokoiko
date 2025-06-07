@@ -28,48 +28,14 @@ import {
 import Image from "next/image";
 import { useTopPage } from "./top.hook";
 import { Controller } from "react-hook-form";
+import type { LatLng, GoogleData, YahooData, InitialValues } from "@/types/common";
 
 type Props = {
-  geocodeResult: { lat: number; lng: number } | null;
-  yahooData: {
-    lat: number;
-    lng: number;
-    results: Array<{
-      name: string;
-      url?: string;
-      image?: string;
-      address?: string;
-      latitude?: number;
-      longitude?: number;
-      now: number;
-    }>;
-    hasNextPage: boolean;
-  } | null;
-  googleData: {
-    lat: number;
-    lng: number;
-    results: Array<{
-      name?: string;
-      url?: string;
-      image?: string;
-      address?: string;
-      latitude?: number;
-      longitude?: number;
-      type: string;
-      now: number;
-    }>;
-    types: Array<{
-      name: string;
-      nextPageToken: string;
-    }>;
-  } | null;
+  geocodeResult: LatLng | null;
+  yahooData: YahooData | null;
+  googleData: GoogleData | null;
   onSubmit?: (formData: FormData) => void;
-  initialValues?: {
-    address?: string;
-    category?: string;
-    googleTypes?: string[];
-    yahooGenres?: string[];
-  };
+  initialValues?: InitialValues;
 };
 
 export const TopPage = ({

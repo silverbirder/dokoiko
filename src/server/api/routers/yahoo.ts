@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { radius } from "./data";
 import { categoryMapping } from "./data";
 import type { YahooLocalSearchResponse } from "./yahoo.type";
+import type { YahooSearchResult } from "@/types/common";
 
 const YAHOO_API_KEY = process.env.YAHOO_API_KEY ?? "";
 
@@ -53,7 +54,7 @@ const getYahooLocalSearch = async (
     genreCodes = categoryConfig?.yahoo;
   }
 
-  let requestParams: {
+  const requestParams: {
     appid: string;
     lon: string;
     lat: string;
@@ -88,7 +89,7 @@ const getYahooLocalSearch = async (
   const features = data.Feature ?? [];
   const total = data.ResultInfo?.Total ?? 0;
 
-  const results = features.map((item) => {
+  const results: YahooSearchResult[] = features.map((item) => {
     const [lng, lat] = item.Geometry.Coordinates.split(",").map(Number);
     let imageUrl: string | undefined;
     if (item.Property?.Detail) {

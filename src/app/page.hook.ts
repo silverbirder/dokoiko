@@ -1,16 +1,25 @@
 import { api } from "@/trpc/server";
+import type { LatLng, GoogleData, YahooData } from "@/types/common";
+
+type Props = {
+  address: string;
+  category: string;
+  googleTypes: string[];
+  yahooGenres: string[];
+};
+
+type PageHookResult = {
+  geocodeResult: LatLng | null;
+  googleData: GoogleData | null;
+  yahooData: YahooData | null;
+};
 
 export async function getPageHook({
   address,
   category,
   googleTypes,
   yahooGenres,
-}: {
-  address: string;
-  category: string;
-  googleTypes: string[];
-  yahooGenres: string[];
-}) {
+}: Props): Promise<PageHookResult> {
   const geocodeResult = address
     ? await api.google.geocode({ address }).catch(() => null)
     : null;

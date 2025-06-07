@@ -6,8 +6,9 @@ import { googlePlaceTypes } from "@/lib/google-place-types";
 import { yahooGenreTypes } from "@/lib/yahoo-genre-types";
 import { categoryMapping } from "@/server/api/routers/data";
 import { Checkbox, Label } from "@/components";
+import type { ComponentPropsBase } from "@/types/common";
 
-type Props = {
+type Props = ComponentPropsBase & {
   selectedGoogleTypes: string[];
   selectedYahooTypes: string[];
   selectedCategory: string;

@@ -12,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect } from "react";
 import { radius } from "@/server/api/routers/data";
+import type { Position, MarkerData } from "@/types/common";
 
 L.Icon.Default.mergeOptions({
   iconUrl: "/leaflet/marker-icon.png",
@@ -19,19 +20,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/leaflet/marker-shadow.png",
 });
 
-type MarkerData = {
-  position: [number, number];
-  popupText: string;
-};
-
 type Props = {
-  position?: [number, number];
-  addressPosition?: [number, number];
+  position?: Position;
+  addressPosition?: Position;
   markers?: MarkerData[];
   selectedMarkerId?: number;
 };
 
-const MapCenterUpdater = ({ position }: { position?: [number, number] }) => {
+const MapCenterUpdater = ({ position }: { position?: Position }) => {
   const map = useMap();
   useEffect(() => {
     if (position) {
