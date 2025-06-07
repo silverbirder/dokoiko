@@ -83,7 +83,6 @@ const geocodeAddress = async (
     }
     return null;
   } catch (error) {
-    console.error("Error geocoding address:", error);
     throw new Error("Failed to geocode address");
   }
 };
@@ -94,14 +93,6 @@ const getPlacesNearby = async (
   types: { name: string; pageToken?: string }[],
 ) => {
   const now = new Date().getTime();
-  console.log("[Google Places API] getPlacesNearby parameters:", {
-    lat,
-    lng,
-    types,
-    radius,
-    timestamp: new Date().toISOString(),
-  });
-
   const allResults: {
     name?: string;
     url?: string;
@@ -116,10 +107,6 @@ const getPlacesNearby = async (
   const allTypes: { name: string; nextPageToken: string }[] = [];
 
   if (types.length === 0) {
-    console.log(
-      "[Google Places API] Searching without specific types (all places)",
-    );
-
     const requestParams: {
       location: { lat: number; lng: number };
       language: Language;
@@ -133,14 +120,9 @@ const getPlacesNearby = async (
       key: GOOGLE_API_KEY,
     };
 
+    console.log("[Google API] getPlacesNearby parameters:", requestParams);
     const res = await client.placesNearby({
       params: requestParams,
-    });
-
-    console.log("[Google Places API] Response for 'all' types:", {
-      resultCount: res.data.results.length,
-      status: res.status,
-      nextPageToken: res.data.next_page_token,
     });
 
     const results = res.data.results.map((r) => ({
@@ -166,13 +148,7 @@ const getPlacesNearby = async (
       allTypes.push({ name: "all", nextPageToken: res.data.next_page_token });
     }
   } else {
-    console.log("[Google Places API] Searching with specific types:", types);
-
     for (const type of types) {
-      console.log(
-        `[Google Places API] Searching for type: ${type.name} - ${type.pageToken}`,
-      );
-
       const requestParams: {
         location: { lat: number; lng: number };
         language: Language;
@@ -195,17 +171,10 @@ const getPlacesNearby = async (
         requestParams.type = type.name;
       }
 
+      console.log("[Google API] getPlacesNearby parameters:", requestParams);
       const res = await client.placesNearby({
         params: requestParams,
       });
-
-      console.log(
-        `[Google Places API] Response for type '${type.name} - ${type.pageToken}':`,
-        {
-          resultCount: res.data.results.length,
-          status: res.status,
-        },
-      );
 
       const results = res.data.results.map((r) => ({
         name: r.name,
@@ -234,10 +203,6 @@ const getPlacesNearby = async (
       }
     }
   }
-
-  console.log("[Google Places API] Final results summary:", {
-    totalResults: allResults.length,
-  });
 
   return { results: allResults, types: allTypes };
 };

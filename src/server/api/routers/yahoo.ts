@@ -43,32 +43,28 @@ const getYahooLocalSearch = async (
   selectedGenres?: string[],
 ) => {
   const now = new Date().getTime();
-  console.log("[Yahoo API] getYahooLocalSearch parameters:", {
-    lat,
-    lng,
-    category,
-    page,
-    selectedGenres,
-    timestamp: new Date().toISOString(),
-  });
 
   const url = "https://map.yahooapis.jp/search/local/V1/localSearch";
   const categoryConfig =
     categoryMapping[category as keyof typeof categoryMapping];
-  
+
   let genreCodes = selectedGenres;
   if (!genreCodes || genreCodes.length === 0) {
     genreCodes = categoryConfig?.yahoo;
   }
 
-  console.log("[Yahoo API] Category mapping:", {
-    category,
-    categoryConfig,
-    selectedGenres,
-    finalGenreCodes: genreCodes,
-  });
-
-  const baseParams = {
+  let requestParams: {
+    appid: string;
+    lon: string;
+    lat: string;
+    output: string;
+    results: string;
+    start: string;
+    sort: string;
+    detail: string;
+    dist: string;
+    gc?: string;
+  } = {
     appid: YAHOO_API_KEY,
     lon: lng.toString(),
     lat: lat.toString(),
@@ -81,17 +77,12 @@ const getYahooLocalSearch = async (
     // image: "true",
   };
 
-  const params = new URLSearchParams(baseParams);
   if (category && genreCodes && genreCodes.length > 0) {
-    params.set("gc", genreCodes.join(","));
+    requestParams.gc = genreCodes.join(",");
   }
 
-  console.log("[Yahoo API] Final request parameters:", {
-    url: `${url}?${params.toString()}`,
-    baseParams,
-    appliedGenreCodes: genreCodes,
-  });
-
+  const params = new URLSearchParams(requestParams);
+  console.log("[Yahoo API] getYahooLocalSearch parameters:", requestParams);
   const response = await fetch(`${url}?${params.toString()}`);
   const data = (await response.json()) as YahooLocalSearchResponse;
   const features = data.Feature ?? [];
@@ -123,15 +114,6 @@ const getYahooLocalSearch = async (
 
   const currentStart = (page - 1) * 20 + 1;
   const currentEnd = currentStart + results.length - 1;
-
-  console.log("[Yahoo API] Response summary:", {
-    responseStatus: response.status,
-    featuresCount: features.length,
-    total,
-    currentStart,
-    currentEnd,
-    hasData: data.Feature !== undefined,
-  });
 
   const hasNextPage = currentEnd < total;
 
