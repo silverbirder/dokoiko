@@ -1,12 +1,16 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { Client, Language } from "@googlemaps/google-maps-services-js";
+import {
+  Client,
+  Language,
+  type PlacesNearbyRequest,
+} from "@googlemaps/google-maps-services-js";
 import { radius } from "./data";
-import type { 
-  LatLng, 
-  GoogleSearchResult, 
-  GoogleTypeSelection 
+import type {
+  LatLng,
+  GoogleSearchResult,
+  GoogleTypeSelection,
 } from "@/types/common";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API_KEY ?? "";
@@ -67,9 +71,7 @@ export const googleRouter = createTRPCRouter({
     }),
 });
 
-const geocodeAddress = async (
-  address: string,
-): Promise<LatLng | null> => {
+const geocodeAddress = async (address: string): Promise<LatLng | null> => {
   try {
     const response = await client.geocode({
       params: {
@@ -103,13 +105,7 @@ const getPlacesNearby = async (
   const allTypes: { name: string; nextPageToken: string }[] = [];
 
   if (types.length === 0) {
-    const requestParams: {
-      location: { lat: number; lng: number };
-      language: Language;
-      radius: number;
-      key: string;
-      pagetoken?: string;
-    } = {
+    const requestParams: PlacesNearbyRequest["params"] = {
       location: { lat, lng },
       language: Language.ja,
       radius,
@@ -145,14 +141,7 @@ const getPlacesNearby = async (
     }
   } else {
     for (const type of types) {
-      const requestParams: {
-        location: { lat: number; lng: number };
-        language: Language;
-        radius: number;
-        type?: string;
-        key: string;
-        pagetoken?: string;
-      } = {
+      const requestParams: PlacesNearbyRequest["params"] = {
         location: { lat, lng },
         language: Language.ja,
         radius,
