@@ -217,4 +217,15 @@ export const categoryMapping = {
   },
 };
 
+export const majorGoogleOptions = {
+  "グルメ・レストラン": ["restaurant", "cafe", "bar"],
+  ショッピング: ["shopping_mall", "supermarket", "convenience_store"],
+  "レジャー・エンタメ": ["tourist_attraction", "museum", "park"],
+  "暮らし・生活": ["hospital", "pharmacy", "bank"],
+  交通: ["train_station", "bus_station", "parking"],
+  教育: ["university", "library", "primary_school"],
+  宿泊施設: ["hotel", "guest_house", "hostel"],
+  宗教施設: ["church", "mosque", "synagogue"],
+} as const;
+
 export const radius = 3000;

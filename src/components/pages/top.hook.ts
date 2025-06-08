@@ -4,15 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { api } from "@/trpc/react";
-import type { 
-  LatLng, 
-  GoogleData, 
-  YahooData, 
+import type {
+  LatLng,
+  GoogleData,
+  YahooData,
   InitialValues,
   Position,
   GoogleTypeSelection,
   UnifiedSearchResult,
-  MarkerData
+  MarkerData,
 } from "@/types/common";
 
 const searchFormSchema = z.object({
@@ -53,9 +53,7 @@ export const useTopPage = ({
   const [yahooData, setYahooData] = useState(initialYahooData);
   const [page, setPage] = useState(1);
   const [googleData, setGoogleData] = useState(initialGoogleData);
-  const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>(
-    [],
-  );
+  const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>([]);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -205,19 +203,17 @@ export const useTopPage = ({
 
   const handleSubmit = form.handleSubmit(handleFormSubmit);
 
-  const handleCardClick = useCallback(
-    (position: Position, index: number) => {
-      setMapPosition(position);
-      setSelectedMarkerId(index);
-    },
-    [],
-  );
+  const handleCardClick = useCallback((position: Position, index: number) => {
+    setMapPosition(position);
+    setSelectedMarkerId(index);
+  }, []);
 
   const handleMoreClick = useCallback(async () => {
     const localGoogleData = await utils.google.searchNearby.fetch({
       lat: geocodeResult?.lat ?? 0,
       lng: geocodeResult?.lng ?? 0,
       selectedTypes: selectedTypes,
+      category: selectedCategory,
     });
     const localYahooData = await utils.yahoo.searchLocal.fetch({
       category: initialValues?.category ?? "",
@@ -250,7 +246,14 @@ export const useTopPage = ({
         results: [...prev.results, ...localYahooData.results],
       };
     });
-  }, [utils, page, geocodeResult, initialValues, selectedTypes]);
+  }, [
+    utils,
+    page,
+    geocodeResult,
+    initialValues,
+    selectedTypes,
+    selectedCategory,
+  ]);
 
   return {
     form,

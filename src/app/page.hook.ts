@@ -33,6 +33,7 @@ export async function getPageHook({
             googleTypes.length > 0
               ? googleTypes.map((type) => ({ name: type }))
               : undefined,
+          category,
         })
         .catch(() => null)
     : null;

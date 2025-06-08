@@ -6,7 +6,7 @@ import {
   Language,
   type PlacesNearbyRequest,
 } from "@googlemaps/google-maps-services-js";
-import { radius } from "./data";
+import { radius, majorGoogleOptions } from "./data";
 import type {
   LatLng,
   GoogleSearchResult,
@@ -50,12 +50,21 @@ export const googleRouter = createTRPCRouter({
           )
           .max(3)
           .optional(),
+        category: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, selectedTypes } = input;
-      const types =
+      const { lat, lng, selectedTypes, category } = input;
+      let types =
         selectedTypes && selectedTypes.length > 0 ? selectedTypes : [];
+      if (types.length === 0 && category) {
+        const majorOptions =
+          majorGoogleOptions[category as keyof typeof majorGoogleOptions];
+        if (majorOptions) {
+          types = majorOptions.map((type) => ({ name: type }));
+        }
+      }
+
       const { results, types: allTypes } = await getPlacesNearby(
         lat,
         lng,

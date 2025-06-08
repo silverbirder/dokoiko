@@ -119,32 +119,34 @@ export const SearchOptionSelector = ({
         </div>
         {filteredGooglePlaceTypes.length > 0 ? (
           <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto">
-            {filteredGooglePlaceTypes.map(([type, label]) => (
-              <div key={type} className="flex items-center space-x-2 text-xs">
-                <Checkbox
-                  id={`google-${type}`}
-                  checked={selectedGoogleTypes.includes(type)}
-                  onCheckedChange={(checked) =>
-                    handleGoogleTypeChange(type, !!checked)
-                  }
-                  disabled={
-                    !selectedGoogleTypes.includes(type) &&
-                    selectedGoogleTypes.length >= 3
-                  }
-                />
-                <Label
-                  className={`cursor-pointer text-xs ${
-                    selectedGoogleTypes.length >= 3 &&
-                    !selectedGoogleTypes.includes(type)
-                      ? "text-gray-400"
-                      : ""
-                  }`}
-                  htmlFor={`google-${type}`}
-                >
-                  {label}
-                </Label>
-              </div>
-            ))}
+            {filteredGooglePlaceTypes.map(([type, label]) => {
+              return (
+                <div key={type} className="flex items-center space-x-2 text-xs">
+                  <Checkbox
+                    id={`google-${type}`}
+                    checked={selectedGoogleTypes.includes(type)}
+                    onCheckedChange={(checked) =>
+                      handleGoogleTypeChange(type, !!checked)
+                    }
+                    disabled={
+                      !selectedGoogleTypes.includes(type) &&
+                      selectedGoogleTypes.length >= 3
+                    }
+                  />
+                  <Label
+                    className={`cursor-pointer text-xs ${
+                      selectedGoogleTypes.length >= 3 &&
+                      !selectedGoogleTypes.includes(type)
+                        ? "text-gray-400"
+                        : ""
+                    }`}
+                    htmlFor={`google-${type}`}
+                  >
+                    {label}
+                  </Label>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center text-sm text-gray-500">
