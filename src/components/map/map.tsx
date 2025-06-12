@@ -27,6 +27,8 @@ type Props = {
   selectedMarkerId?: number;
 };
 
+const CENTER_POSITION: Position = [34.70262392204351, 135.49587252721363];
+
 const MapCenterUpdater = ({ position }: { position?: Position }) => {
   const map = useMap();
   useEffect(() => {
@@ -65,7 +67,7 @@ export const Map = ({
   return (
     <MapContainer
       className="h-full w-full"
-      center={position ?? [51.505, -0.09]}
+      center={position ?? CENTER_POSITION}
       zoom={14}
     >
       <MapCenterUpdater position={position} />
