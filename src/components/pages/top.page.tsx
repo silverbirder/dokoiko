@@ -85,7 +85,7 @@ export const TopPage = ({
                 <Input
                   {...field}
                   type="text"
-                  placeholder="例: 東京都千代田区千代田1-1"
+                  placeholder="例: 大阪駅"
                   className="bg-white"
                 />
               )}
