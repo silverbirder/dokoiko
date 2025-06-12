@@ -58,6 +58,19 @@ const PopupController = ({
   return null;
 };
 
+const MarkersBoundsUpdater = ({ markers }: { markers?: MarkerData[] }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (markers && markers.length > 0) {
+      const bounds = L.latLngBounds(markers.map((marker) => marker.position));
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }
+  }, [markers, map]);
+
+  return null;
+};
+
 export const Map = ({
   position,
   addressPosition,
@@ -71,6 +84,7 @@ export const Map = ({
       zoom={14}
     >
       <MapCenterUpdater position={position} />
+      <MarkersBoundsUpdater markers={markers} />
       <PopupController selectedMarkerId={selectedMarkerId} markers={markers} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
