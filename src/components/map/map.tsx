@@ -82,6 +82,7 @@ export const Map = ({
       className="z-0 h-full w-full"
       center={position ?? CENTER_POSITION}
       zoom={14}
+      zoomControl={false}
     >
       <MapCenterUpdater position={position} />
       <MarkersBoundsUpdater markers={markers} />
