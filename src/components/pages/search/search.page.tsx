@@ -24,11 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
   YahooCredit,
-} from "..";
+} from "@/components";
 import Image from "next/image";
-import { useTopPage } from "./top.hook";
+import { useSearchPage } from "./search.hook";
 import { Controller } from "react-hook-form";
-import type { LatLng, GoogleData, YahooData, InitialValues } from "@/types/common";
+import type {
+  LatLng,
+  GoogleData,
+  YahooData,
+  InitialValues,
+} from "@/types/common";
 
 type Props = {
   geocodeResult: LatLng | null;
@@ -38,7 +43,7 @@ type Props = {
   initialValues?: InitialValues;
 };
 
-export const TopPage = ({
+export const SearchPage = ({
   geocodeResult,
   yahooData,
   googleData,
@@ -65,7 +70,7 @@ export const TopPage = ({
     handleCardClick,
     handleMoreClick,
     setIsAdvancedOptionsOpen,
-  } = useTopPage({
+  } = useSearchPage({
     geocodeResult,
     yahooData,
     googleData,

@@ -36,7 +36,7 @@ type Props = {
   initialValues?: InitialValues;
 };
 
-export const useTopPage = ({
+export const useSearchPage = ({
   geocodeResult,
   yahooData: initialYahooData,
   googleData: initialGoogleData,

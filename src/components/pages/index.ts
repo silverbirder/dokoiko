@@ -1,1 +1,2 @@
-export * from "./top.page";
+export * from "./search";
+export * from "./top";
