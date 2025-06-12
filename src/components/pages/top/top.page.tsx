@@ -45,8 +45,8 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
   });
 
   return (
-    <div className="relative h-screen w-full">
-      <main className="relative z-10 mx-auto max-w-xl p-4">
+    <div className="relative flex h-screen w-full items-center justify-center">
+      <main className="relative z-10 w-full max-w-xl p-4">
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex gap-1">
             <Controller
@@ -109,11 +109,6 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
                   </Select>
                 )}
               />
-              {errors.category && (
-                <p className="text-sm text-red-500">
-                  {errors.category.message}
-                </p>
-              )}
               <SearchOptionSelector
                 selectedGoogleTypes={googleTypes}
                 selectedYahooTypes={yahooGenres}
@@ -121,21 +116,12 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
                 onSelectedGoogleTypesChange={handleGoogleTypesChange}
                 onSelectedYahooTypesChange={handleYahooGenresChange}
               />
-              {errors.googleTypes && (
-                <p className="text-sm text-red-500">
-                  {errors.googleTypes.message}
-                </p>
-              )}
-              {errors.yahooGenres && (
-                <p className="text-sm text-red-500">
-                  {errors.yahooGenres.message}
-                </p>
-              )}
             </CollapsibleContent>
           </Collapsible>
         </form>
       </main>
       <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-10 bg-gray-950 opacity-80" />
         <MapCaller />
       </div>
     </div>

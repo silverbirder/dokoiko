@@ -66,7 +66,7 @@ export const Map = ({
 }: Props) => {
   return (
     <MapContainer
-      className="h-full w-full"
+      className="z-0 h-full w-full"
       center={position ?? CENTER_POSITION}
       zoom={14}
     >
