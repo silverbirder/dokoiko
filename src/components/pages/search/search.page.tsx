@@ -172,7 +172,7 @@ export const SearchPage = ({
         </form>
       </main>
       {results.length > 0 && (
-        <div className="absolute right-0 bottom-4 left-0 z-10 overflow-x-auto p-4 whitespace-nowrap">
+        <div className="bg-primary absolute right-0 bottom-4 left-0 z-10 overflow-x-auto rounded-lg p-4 whitespace-nowrap">
           <div className="flex gap-4">
             {results.map((item, index) => (
               <Card
