@@ -34,6 +34,7 @@ import type {
   YahooData,
   InitialValues,
 } from "@/types/common";
+import Link from "next/link";
 
 type Props = {
   geocodeResult: LatLng | null;
@@ -188,7 +189,7 @@ export const SearchPage = ({
                     </CardTitle>
                   )}
                   {item.address && (
-                    <CardDescription className="text-sm leading-relaxed break-words whitespace-normal text-gray-600">
+                    <CardDescription className="text-sm leading-relaxed break-words whitespace-normal">
                       {item.address}
                     </CardDescription>
                   )}
@@ -208,8 +209,8 @@ export const SearchPage = ({
                       className="h-40 w-full rounded-md object-cover"
                     />
                   ) : (
-                    <div className="flex h-40 w-full items-center justify-center rounded-md bg-gray-100">
-                      <div className="text-center text-gray-400">
+                    <div className="flex h-40 w-full items-center justify-center rounded-md">
+                      <div className="text-center">
                         <ImageIcon className="mx-auto mb-2 h-12 w-12" />
                         <p className="text-sm">画像なし</p>
                       </div>
@@ -219,14 +220,16 @@ export const SearchPage = ({
                 <CardFooter className="flex flex-col gap-3 pt-4">
                   <div className="flex w-full items-center justify-between">
                     {item.url ? (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-sm text-blue-600 transition-colors hover:text-blue-800 hover:underline"
-                      >
-                        詳細を見る
-                      </a>
+                      <Button asChild variant="outline">
+                        <Link
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-sm"
+                        >
+                          詳細を見る
+                        </Link>
+                      </Button>
                     ) : (
                       <div></div>
                     )}
