@@ -21,8 +21,27 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center">
-      <main className="relative z-10 w-full max-w-xl p-4">
-        <form onSubmit={handleSubmit}>
+      <main className="relative z-10 flex w-full max-w-xl flex-col items-center gap-8 p-4">
+        <div className="flex w-full flex-col items-center justify-center gap-2">
+          <div className="bg-primary grid h-32 w-32 grid-cols-2 rounded-lg text-4xl font-bold">
+            <div className="text-primary-foreground flex items-center justify-center">
+              ど
+            </div>
+            <div className="text-primary-foreground flex items-center justify-center">
+              こ
+            </div>
+            <div className="text-primary-foreground flex items-center justify-center">
+              い
+            </div>
+            <div className="text-primary-foreground flex items-center justify-center">
+              こ
+            </div>
+          </div>
+          <div className="text-primary-foreground text-center text-xl font-semibold tracking-wide">
+            外に出かけたい気分なら、どこいこ！
+          </div>
+        </div>
+        <form onSubmit={handleSubmit} className="w-full">
           <div className="flex gap-1">
             <Controller
               name="address"
