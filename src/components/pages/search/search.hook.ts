@@ -50,6 +50,7 @@ export const useSearchPage = ({
     number | undefined
   >();
   const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
+  const [isResultsVisible, setIsResultsVisible] = useState(true);
   const [yahooData, setYahooData] = useState(initialYahooData);
   const [page, setPage] = useState(1);
   const [googleData, setGoogleData] = useState(initialGoogleData);
@@ -208,6 +209,10 @@ export const useSearchPage = ({
     setSelectedMarkerId(index);
   }, []);
 
+  const handleToggleResults = useCallback(() => {
+    setIsResultsVisible(!isResultsVisible);
+  }, [isResultsVisible]);
+
   const handleMoreClick = useCallback(async () => {
     const localGoogleData = await utils.google.searchNearby.fetch({
       lat: geocodeResult?.lat ?? 0,
@@ -266,10 +271,12 @@ export const useSearchPage = ({
     googleTypes,
     yahooGenres,
     isAdvancedOptionsOpen,
+    isResultsVisible,
     handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
+    handleToggleResults,
     handleMoreClick,
     setIsAdvancedOptionsOpen,
   };
