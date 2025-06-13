@@ -7,7 +7,14 @@ const LazyMap = dynamic(
   () => import("./map").then((mod) => ({ default: mod.Map })),
   {
     ssr: false,
-    loading: () => <p>地図を読み込み中...</p>,
+    loading: () => (
+      <div className="flex h-[400px] w-full items-center justify-center rounded-lg bg-gray-50">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
+          <p className="text-sm text-gray-600">地図を読み込み中...</p>
+        </div>
+      </div>
+    ),
   },
 );
 
