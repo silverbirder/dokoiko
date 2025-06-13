@@ -1,7 +1,13 @@
 "use client";
 
 import { categoryMapping } from "@/server/api/routers/data";
-import { ImageIcon, ChevronDown, ChevronUp, Search } from "lucide-react";
+import {
+  ImageIcon,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  MapPin,
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Badge,
@@ -74,12 +80,15 @@ export const SearchPage = ({
     isAdvancedOptionsOpen,
     isResultsVisible,
     isSearchSheetOpen,
+    showResearchButton,
     handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
     handleMoreClick,
     handleToggleResults,
+    handleMapMove,
+    handleResearchAtCurrentLocation,
     setIsAdvancedOptionsOpen,
     setIsSearchSheetOpen,
   } = useSearchPage({
@@ -92,6 +101,30 @@ export const SearchPage = ({
 
   return (
     <div className="relative h-screen w-full">
+      <AnimatePresence>
+        {showResearchButton && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            transition={{
+              type: "spring",
+              damping: 25,
+              stiffness: 200,
+              mass: 0.8,
+            }}
+            className="absolute top-4 left-1/2 z-30 -translate-x-1/2"
+          >
+            <Button
+              onClick={handleResearchAtCurrentLocation}
+              className="flex items-center gap-2 bg-blue-600 text-white shadow-lg backdrop-blur-sm hover:bg-blue-700"
+            >
+              <MapPin className="h-4 w-4" />
+              この位置で再検索する
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="absolute top-4 right-4 z-20">
         <Sheet open={isSearchSheetOpen} onOpenChange={setIsSearchSheetOpen}>
           <SheetTrigger asChild>
@@ -346,6 +379,7 @@ export const SearchPage = ({
             geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined
           }
           selectedMarkerId={selectedMarkerId}
+          onMapMove={handleMapMove}
         />
       </div>
     </div>

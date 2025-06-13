@@ -20,9 +20,21 @@ export async function getPageHook({
   googleTypes,
   yahooGenres,
 }: Props): Promise<PageHookResult> {
-  const geocodeResult = address
-    ? await api.google.geocode({ address }).catch(() => null)
-    : null;
+  let geocodeResult: LatLng | null = null;
+
+  if (address) {
+    const latLngPattern = /^-?\d+\.?\d*,-?\d+\.?\d*$/;
+    if (latLngPattern.test(address)) {
+      const [latStr, lngStr] = address.split(",");
+      const lat = Number(latStr);
+      const lng = Number(lngStr);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        geocodeResult = { lat, lng };
+      }
+    } else {
+      geocodeResult = await api.google.geocode({ address }).catch(() => null);
+    }
+  }
 
   const googleData = geocodeResult
     ? await api.google

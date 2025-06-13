@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { api } from "@/trpc/react";
+import { getDistance } from "geolib";
 import type {
   LatLng,
   GoogleData,
@@ -46,6 +47,10 @@ export const useSearchPage = ({
   const [mapPosition, setMapPosition] = useState<Position | undefined>(
     geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
   );
+  const [currentMapCenter, setCurrentMapCenter] = useState<
+    Position | undefined
+  >(geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined);
+  const [showResearchButton, setShowResearchButton] = useState(false);
   const [selectedMarkerId, setSelectedMarkerId] = useState<
     number | undefined
   >();
@@ -71,6 +76,16 @@ export const useSearchPage = ({
   const yahooGenres = form.watch("yahooGenres");
 
   const utils = api.useUtils();
+
+  const calculateDistance = useCallback(
+    (pos1: Position, pos2: Position): number => {
+      return getDistance(
+        { latitude: pos1[0], longitude: pos1[1] },
+        { latitude: pos2[0], longitude: pos2[1] },
+      );
+    },
+    [],
+  );
 
   const results = useMemo((): UnifiedSearchResult[] => {
     const typedGoogleResults: UnifiedSearchResult[] =
@@ -118,6 +133,10 @@ export const useSearchPage = ({
     setMapPosition(
       geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
     );
+    setCurrentMapCenter(
+      geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
+    );
+    setShowResearchButton(false);
   }, [geocodeResult]);
 
   useEffect(() => {
@@ -214,6 +233,42 @@ export const useSearchPage = ({
     setIsResultsVisible(!isResultsVisible);
   }, [isResultsVisible]);
 
+  const handleMapMove = useCallback(
+    (center: Position) => {
+      setCurrentMapCenter(center);
+      if (geocodeResult) {
+        const originalPosition: Position = [
+          geocodeResult.lat,
+          geocodeResult.lng,
+        ];
+        const distance = calculateDistance(originalPosition, center);
+        if (distance > 3000) {
+          setShowResearchButton(true);
+        } else {
+          setShowResearchButton(false);
+        }
+      }
+    },
+    [geocodeResult, calculateDistance],
+  );
+
+  const handleResearchAtCurrentLocation = useCallback(() => {
+    if (!currentMapCenter || !onSubmit) return;
+    const formData = new FormData();
+    formData.append("address", `${currentMapCenter[0]},${currentMapCenter[1]}`);
+    if (selectedCategory) {
+      formData.append("category", selectedCategory);
+    }
+    googleTypes.forEach((type) => {
+      formData.append("googleTypes", type);
+    });
+    yahooGenres.forEach((genre) => {
+      formData.append("yahooGenres", genre);
+    });
+    setShowResearchButton(false);
+    onSubmit(formData);
+  }, [currentMapCenter, onSubmit, selectedCategory, googleTypes, yahooGenres]);
+
   const handleMoreClick = useCallback(async () => {
     const localGoogleData = await utils.google.searchNearby.fetch({
       lat: geocodeResult?.lat ?? 0,
@@ -274,12 +329,16 @@ export const useSearchPage = ({
     isAdvancedOptionsOpen,
     isResultsVisible,
     isSearchSheetOpen,
+    showResearchButton,
+    currentMapCenter,
     handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
     handleToggleResults,
     handleMoreClick,
+    handleMapMove,
+    handleResearchAtCurrentLocation,
     setIsAdvancedOptionsOpen,
     setIsSearchSheetOpen,
   };

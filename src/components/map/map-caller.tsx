@@ -23,6 +23,7 @@ type Props = {
   addressPosition?: Position;
   markers?: MarkerData[];
   selectedMarkerId?: number;
+  onMapMove?: (center: Position) => void;
 };
 
 export const MapCaller = (props: Props) => {

@@ -7,6 +7,7 @@ import {
   Popup,
   Circle,
   useMap,
+  useMapEvents,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -25,6 +26,7 @@ type Props = {
   addressPosition?: Position;
   markers?: MarkerData[];
   selectedMarkerId?: number;
+  onMapMove?: (center: Position) => void;
 };
 
 const CENTER_POSITION: Position = [34.70262392204351, 135.49587252721363];
@@ -71,11 +73,36 @@ const MarkersBoundsUpdater = ({ markers }: { markers?: MarkerData[] }) => {
   return null;
 };
 
+const MapEventsHandler = ({
+  onMapMove,
+}: {
+  onMapMove?: (center: Position) => void;
+}) => {
+  useMapEvents({
+    dragend: (e: L.LeafletEvent) => {
+      if (onMapMove) {
+        const map = e.target as L.Map;
+        const center = map.getCenter();
+        onMapMove([center.lat, center.lng]);
+      }
+    },
+    zoomend: (e: L.LeafletEvent) => {
+      if (onMapMove) {
+        const map = e.target as L.Map;
+        const center = map.getCenter();
+        onMapMove([center.lat, center.lng]);
+      }
+    },
+  });
+  return null;
+};
+
 export const Map = ({
   position,
   addressPosition,
   markers,
   selectedMarkerId,
+  onMapMove,
 }: Props) => {
   return (
     <MapContainer
@@ -87,6 +114,7 @@ export const Map = ({
       <MapCenterUpdater position={position} />
       <MarkersBoundsUpdater markers={markers} />
       <PopupController selectedMarkerId={selectedMarkerId} markers={markers} />
+      <MapEventsHandler onMapMove={onMapMove} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
