@@ -24,17 +24,49 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
       <main className="relative z-10 flex w-full max-w-xl flex-col items-center gap-8 p-4">
         <div className="flex w-full flex-col items-center justify-center gap-2">
           <div className="bg-primary grid h-32 w-32 grid-cols-2 rounded-lg text-4xl font-bold">
-            <div className="text-primary-foreground flex items-center justify-center">
-              ど
+            <div className="flex items-center justify-center">
+              <span
+                className="bg-gradient-to-br from-green-400 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(45deg, #10b981, #10b981 10px, #3b82f6 10px, #3b82f6 20px)",
+                }}
+              >
+                ど
+              </span>
             </div>
-            <div className="text-primary-foreground flex items-center justify-center">
-              こ
+            <div className="flex items-center justify-center">
+              <span
+                className="bg-gradient-to-br from-green-400 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(-45deg, #10b981, #10b981 10px, #3b82f6 10px, #3b82f6 20px)",
+                }}
+              >
+                こ
+              </span>
             </div>
-            <div className="text-primary-foreground flex items-center justify-center">
-              い
+            <div className="flex items-center justify-center">
+              <span
+                className="bg-gradient-to-br from-blue-400 via-green-500 to-green-600 bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(135deg, #3b82f6, #3b82f6 10px, #10b981 10px, #10b981 20px)",
+                }}
+              >
+                い
+              </span>
             </div>
-            <div className="text-primary-foreground flex items-center justify-center">
-              こ
+            <div className="flex items-center justify-center">
+              <span
+                className="bg-gradient-to-br from-blue-400 via-green-500 to-green-600 bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(-135deg, #3b82f6, #3b82f6 10px, #10b981 10px, #10b981 20px)",
+                }}
+              >
+                こ
+              </span>
             </div>
           </div>
           <div className="text-primary-foreground text-center text-xl font-semibold tracking-wide">
