@@ -55,6 +55,7 @@ export const useSearchPage = ({
   const [page, setPage] = useState(1);
   const [googleData, setGoogleData] = useState(initialGoogleData);
   const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>([]);
+  const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -272,6 +273,7 @@ export const useSearchPage = ({
     yahooGenres,
     isAdvancedOptionsOpen,
     isResultsVisible,
+    isSearchSheetOpen,
     handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
@@ -279,5 +281,6 @@ export const useSearchPage = ({
     handleToggleResults,
     handleMoreClick,
     setIsAdvancedOptionsOpen,
+    setIsSearchSheetOpen,
   };
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { categoryMapping } from "@/server/api/routers/data";
-import { ImageIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { ImageIcon, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Badge,
@@ -25,6 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
   YahooCredit,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components";
 import Image from "next/image";
 import { useSearchPage } from "./search.hook";
@@ -67,6 +73,7 @@ export const SearchPage = ({
     yahooGenres,
     isAdvancedOptionsOpen,
     isResultsVisible,
+    isSearchSheetOpen,
     handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
@@ -74,6 +81,7 @@ export const SearchPage = ({
     handleMoreClick,
     handleToggleResults,
     setIsAdvancedOptionsOpen,
+    setIsSearchSheetOpen,
   } = useSearchPage({
     geocodeResult,
     yahooData,
@@ -84,96 +92,128 @@ export const SearchPage = ({
 
   return (
     <div className="relative h-screen w-full">
-      <main className="relative z-10 mx-auto max-w-xl p-4">
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="flex gap-1">
-            <Controller
-              name="address"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  type="text"
-                  placeholder="例: 大阪駅"
-                  className="bg-white"
-                />
-              )}
-            />
-            <Button type="submit">検索</Button>
-          </div>
-          {errors.address && (
-            <p className="text-sm text-red-500">{errors.address.message}</p>
-          )}
+      <div className="absolute top-4 right-4 z-20">
+        <Sheet open={isSearchSheetOpen} onOpenChange={setIsSearchSheetOpen}>
+          <SheetTrigger asChild>
+            <Button
+              size="icon"
+              className="bg-white/90 shadow-lg backdrop-blur-sm hover:bg-white"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+            <SheetHeader>
+              <SheetTitle>検索条件を設定</SheetTitle>
+              <SheetDescription>
+                検索したい場所とオプションを選択してください。
+              </SheetDescription>
+            </SheetHeader>
+            <div className="px-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    検索場所
+                  </label>
+                  <div className="flex gap-2">
+                    <Controller
+                      name="address"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder="例: 大阪駅"
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                    <Button type="submit">検索</Button>
+                  </div>
+                  {errors.address && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.address.message}
+                    </p>
+                  )}
+                </div>
 
-          <Collapsible
-            open={isAdvancedOptionsOpen}
-            onOpenChange={setIsAdvancedOptionsOpen}
-          >
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between bg-white"
-                type="button"
-              >
-                詳細検索オプション
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${
-                    isAdvancedOptionsOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 pt-3">
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value ?? undefined}
-                    onValueChange={(value) =>
-                      field.onChange(value === "none" ? "" : value)
-                    }
-                  >
-                    <SelectTrigger className="bg-white">
-                      <SelectValue placeholder="カテゴリを選択してください（任意）" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">カテゴリなし</SelectItem>
-                      {Object.keys(categoryMapping).map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.category && (
-                <p className="text-sm text-red-500">
-                  {errors.category.message}
-                </p>
-              )}
-              <SearchOptionSelector
-                selectedGoogleTypes={googleTypes}
-                selectedYahooTypes={yahooGenres}
-                selectedCategory={selectedCategory ?? ""}
-                onSelectedGoogleTypesChange={handleGoogleTypesChange}
-                onSelectedYahooTypesChange={handleYahooGenresChange}
-              />
-              {errors.googleTypes && (
-                <p className="text-sm text-red-500">
-                  {errors.googleTypes.message}
-                </p>
-              )}
-              {errors.yahooGenres && (
-                <p className="text-sm text-red-500">
-                  {errors.yahooGenres.message}
-                </p>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
-        </form>
-      </main>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    カテゴリ（任意）
+                  </label>
+                  <Controller
+                    name="category"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value ?? undefined}
+                        onValueChange={(value) =>
+                          field.onChange(value === "none" ? "" : value)
+                        }
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="カテゴリを選択してください" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">カテゴリなし</SelectItem>
+                          {Object.keys(categoryMapping).map((cat) => (
+                            <SelectItem key={cat} value={cat}>
+                              {cat}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.category && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.category.message}
+                    </p>
+                  )}
+                </div>
+                <Collapsible
+                  open={isAdvancedOptionsOpen}
+                  onOpenChange={setIsAdvancedOptionsOpen}
+                >
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between"
+                      type="button"
+                    >
+                      詳細検索オプション
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform duration-200 ${
+                          isAdvancedOptionsOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-3 pt-3">
+                    <SearchOptionSelector
+                      selectedGoogleTypes={googleTypes}
+                      selectedYahooTypes={yahooGenres}
+                      selectedCategory={selectedCategory ?? ""}
+                      onSelectedGoogleTypesChange={handleGoogleTypesChange}
+                      onSelectedYahooTypesChange={handleYahooGenresChange}
+                    />
+                    {errors.googleTypes && (
+                      <p className="text-sm text-red-500">
+                        {errors.googleTypes.message}
+                      </p>
+                    )}
+                    {errors.yahooGenres && (
+                      <p className="text-sm text-red-500">
+                        {errors.yahooGenres.message}
+                      </p>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
+              </form>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
       {results.length > 0 && (
         <AnimatePresence>
           <motion.div
