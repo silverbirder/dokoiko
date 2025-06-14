@@ -22,6 +22,7 @@ type Props = {
   position?: Position;
   addressPosition?: Position;
   markers?: MarkerData[];
+  selectedMarkerId?: number;
   onMapMove?: (center: Position) => void;
   onMarkerClick?: (index: number) => void;
 };

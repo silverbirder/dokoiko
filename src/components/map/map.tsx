@@ -25,6 +25,7 @@ type Props = {
   position?: Position;
   addressPosition?: Position;
   markers?: MarkerData[];
+  selectedMarkerId?: number;
   onMapMove?: (center: Position) => void;
   onMarkerClick?: (index: number) => void;
 };
@@ -50,6 +51,25 @@ const MarkersBoundsUpdater = ({ markers }: { markers?: MarkerData[] }) => {
       map.fitBounds(bounds, { padding: [20, 20] });
     }
   }, [markers, map]);
+
+  return null;
+};
+
+const PopupController = ({
+  selectedMarkerId,
+  markers,
+}: {
+  selectedMarkerId?: number;
+  markers?: MarkerData[];
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (selectedMarkerId !== undefined && markers?.[selectedMarkerId]) {
+      const marker = markers[selectedMarkerId];
+      map.openPopup(marker.popupText, marker.position);
+    }
+  }, [selectedMarkerId, markers, map]);
 
   return null;
 };
@@ -82,6 +102,7 @@ export const Map = ({
   position,
   addressPosition,
   markers,
+  selectedMarkerId,
   onMapMove,
   onMarkerClick,
 }: Props) => {
@@ -94,6 +115,7 @@ export const Map = ({
     >
       <MapCenterUpdater position={position} />
       <MarkersBoundsUpdater markers={markers} />
+      <PopupController selectedMarkerId={selectedMarkerId} markers={markers} />
       <MapEventsHandler onMapMove={onMapMove} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

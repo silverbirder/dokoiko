@@ -59,6 +59,7 @@ export const useSearchPage = ({
   const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>([]);
   const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>(undefined);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -203,6 +204,7 @@ export const useSearchPage = ({
 
   const handleCardClick = useCallback((position: Position, index: number) => {
     setMapPosition(position);
+    setSelectedMarkerId(index);
   }, []);
 
   const handleMarkerClick = useCallback(
@@ -312,6 +314,7 @@ export const useSearchPage = ({
     markers,
     isMore,
     mapPosition,
+    selectedMarkerId,
     selectedCategory,
     googleTypes,
     yahooGenres,

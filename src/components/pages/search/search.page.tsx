@@ -82,6 +82,7 @@ export const SearchPage = ({
     markers,
     isMore,
     mapPosition,
+    selectedMarkerId,
     selectedCategory,
     googleTypes,
     yahooGenres,
@@ -496,6 +497,7 @@ export const SearchPage = ({
           addressPosition={
             geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined
           }
+          selectedMarkerId={selectedMarkerId}
           onMapMove={handleMapMove}
           onMarkerClick={handleMarkerClick}
         />
