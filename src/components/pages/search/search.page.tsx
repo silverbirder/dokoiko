@@ -20,9 +20,6 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
   GoogleImage,
   SearchOptionSelector,
   Input,
@@ -88,7 +85,6 @@ export const SearchPage = ({
     selectedCategory,
     googleTypes,
     yahooGenres,
-    isAdvancedOptionsOpen,
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,
@@ -99,7 +95,6 @@ export const SearchPage = ({
     handleMoreClick,
     handleToggleResults,
     handleMapMove,
-    setIsAdvancedOptionsOpen,
     setIsSearchSheetOpen,
   } = searchPageData;
 
@@ -281,44 +276,28 @@ export const SearchPage = ({
                     </p>
                   )}
                 </div>
-                <Collapsible
-                  open={isAdvancedOptionsOpen}
-                  onOpenChange={setIsAdvancedOptionsOpen}
-                >
-                  <CollapsibleTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between"
-                      type="button"
-                    >
-                      詳細検索オプション
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${
-                          isAdvancedOptionsOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-3 pt-3">
-                    <SearchOptionSelector
-                      selectedGoogleTypes={googleTypes}
-                      selectedYahooTypes={yahooGenres}
-                      selectedCategory={selectedCategory ?? ""}
-                      onSelectedGoogleTypesChange={handleGoogleTypesChange}
-                      onSelectedYahooTypesChange={handleYahooGenresChange}
-                    />
-                    {errors.googleTypes && (
-                      <p className="text-sm text-red-500">
-                        {errors.googleTypes.message}
-                      </p>
-                    )}
-                    {errors.yahooGenres && (
-                      <p className="text-sm text-red-500">
-                        {errors.yahooGenres.message}
-                      </p>
-                    )}
-                  </CollapsibleContent>
-                </Collapsible>
+                <div className="space-y-3">
+                  <div className="mb-2">
+                    <h3 className="text-sm font-medium">詳細検索オプション</h3>
+                  </div>
+                  <SearchOptionSelector
+                    selectedGoogleTypes={googleTypes}
+                    selectedYahooTypes={yahooGenres}
+                    selectedCategory={selectedCategory ?? ""}
+                    onSelectedGoogleTypesChange={handleGoogleTypesChange}
+                    onSelectedYahooTypesChange={handleYahooGenresChange}
+                  />
+                  {errors.googleTypes && (
+                    <p className="text-sm text-red-500">
+                      {errors.googleTypes.message}
+                    </p>
+                  )}
+                  {errors.yahooGenres && (
+                    <p className="text-sm text-red-500">
+                      {errors.yahooGenres.message}
+                    </p>
+                  )}
+                </div>
               </form>
             </div>
           </SheetContent>

@@ -52,7 +52,6 @@ export const useSearchPage = ({
   const [selectedMarkerId, setSelectedMarkerId] = useState<
     number | undefined
   >();
-  const [isAdvancedOptionsOpen, setIsAdvancedOptionsOpen] = useState(false);
   const [isResultsVisible, setIsResultsVisible] = useState(true);
   const [yahooData, setYahooData] = useState(initialYahooData);
   const [page, setPage] = useState(1);
@@ -286,7 +285,6 @@ export const useSearchPage = ({
     selectedCategory,
     googleTypes,
     yahooGenres,
-    isAdvancedOptionsOpen,
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,
@@ -297,7 +295,6 @@ export const useSearchPage = ({
     handleToggleResults,
     handleMoreClick,
     handleMapMove,
-    setIsAdvancedOptionsOpen,
     setIsSearchSheetOpen,
   };
 };
