@@ -158,7 +158,7 @@ export const SearchPage = ({
         <Button
           asChild
           size="icon"
-          className="bg-white/90 shadow-lg backdrop-blur-sm hover:bg-white"
+          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg"
         >
           <Link href="/">
             <Home className="h-4 w-4" />
@@ -170,7 +170,7 @@ export const SearchPage = ({
           <SheetTrigger asChild>
             <Button
               size="icon"
-              className="bg-white/90 shadow-lg backdrop-blur-sm hover:bg-white"
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg"
             >
               <Search className="h-4 w-4" />
             </Button>
