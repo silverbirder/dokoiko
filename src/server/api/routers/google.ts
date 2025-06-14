@@ -51,10 +51,11 @@ export const googleRouter = createTRPCRouter({
           .max(3)
           .optional(),
         category: z.string().optional(),
+        radius: z.number().min(100).max(50000).default(3000),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, selectedTypes, category } = input;
+      const { lat, lng, selectedTypes, category, radius } = input;
       let types =
         selectedTypes && selectedTypes.length > 0 ? selectedTypes : [];
       if (types.length === 0 && category) {
@@ -69,6 +70,7 @@ export const googleRouter = createTRPCRouter({
         lat,
         lng,
         types,
+        radius,
       );
 
       return {
@@ -107,6 +109,7 @@ const getPlacesNearby = async (
   lat: number,
   lng: number,
   types: GoogleTypeSelection[],
+  searchRadius = radius,
 ) => {
   const now = new Date().getTime();
   const allResults: GoogleSearchResult[] = [];
@@ -117,7 +120,7 @@ const getPlacesNearby = async (
     const requestParams: PlacesNearbyRequest["params"] = {
       location: { lat, lng },
       language: Language.ja,
-      radius,
+      radius: searchRadius,
       key: GOOGLE_API_KEY,
     };
 
@@ -154,7 +157,7 @@ const getPlacesNearby = async (
       const requestParams: PlacesNearbyRequest["params"] = {
         location: { lat, lng },
         language: Language.ja,
-        radius,
+        radius: searchRadius,
         key: GOOGLE_API_KEY,
       };
 

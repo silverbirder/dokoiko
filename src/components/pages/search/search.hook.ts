@@ -25,6 +25,7 @@ const searchFormSchema = z.object({
   yahooGenres: z
     .array(z.string())
     .max(3, "Yahoo検索オプションは最大3つまでです"),
+  radius: z.number().min(100, "最小100mです").max(50000, "最大50kmです").optional(),
 });
 
 type SearchFormData = z.infer<typeof searchFormSchema>;
@@ -68,11 +69,13 @@ export const useSearchPage = ({
       category: initialValues?.category ?? "",
       googleTypes: initialValues?.googleTypes ?? [],
       yahooGenres: initialValues?.yahooGenres ?? [],
+      radius: initialValues?.radius ?? 3000,
     },
   });
   const selectedCategory = form.watch("category");
   const googleTypes = form.watch("googleTypes");
   const yahooGenres = form.watch("yahooGenres");
+  const radius = form.watch("radius");
 
   const utils = api.useUtils();
 
@@ -246,14 +249,15 @@ export const useSearchPage = ({
           geocodeResult.lng,
         ];
         const distance = calculateDistance(originalPosition, center);
-        if (distance > 3000) {
+        const currentRadius = radius ?? 3000;
+        if (distance > currentRadius) {
           setShowResearchButton(true);
         } else {
           setShowResearchButton(false);
         }
       }
     },
-    [geocodeResult, calculateDistance],
+    [geocodeResult, calculateDistance, radius],
   );
 
   const handleMoreClick = useCallback(async () => {
@@ -264,6 +268,7 @@ export const useSearchPage = ({
         lng: geocodeResult?.lng ?? 0,
         selectedTypes: selectedTypes,
         category: selectedCategory,
+        radius: radius ?? 3000,
       });
       const localYahooData = await utils.yahoo.searchLocal.fetch({
         category: initialValues?.category ?? "",
@@ -274,6 +279,7 @@ export const useSearchPage = ({
           initialValues?.yahooGenres && initialValues.yahooGenres.length > 0
             ? initialValues.yahooGenres
             : undefined,
+        radius: radius ?? 3000,
       });
       setSelectedTypes(
         localGoogleData.types.map((item) => ({
@@ -306,6 +312,7 @@ export const useSearchPage = ({
     initialValues,
     selectedTypes,
     selectedCategory,
+    radius,
   ]);
 
   return {
@@ -318,6 +325,7 @@ export const useSearchPage = ({
     selectedCategory,
     googleTypes,
     yahooGenres,
+    radius,
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,

@@ -30,6 +30,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Slider,
   YahooCredit,
   Sheet,
   SheetContent,
@@ -86,6 +87,7 @@ export const SearchPage = ({
     selectedCategory,
     googleTypes,
     yahooGenres,
+    radius,
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,
@@ -116,11 +118,12 @@ export const SearchPage = ({
     yahooGenres.forEach((genre) => {
       formData.append("yahooGenres", genre);
     });
+    formData.append("radius", (radius ?? 3000).toString());
 
     startTransition(() => {
       action(formData);
     });
-  }, [currentMapCenter, selectedCategory, googleTypes, yahooGenres, action]);
+  }, [currentMapCenter, selectedCategory, googleTypes, yahooGenres, radius, action]);
 
   return (
     <div className="relative h-screen w-full">
@@ -209,6 +212,7 @@ export const SearchPage = ({
                     value={genre}
                   />
                 ))}
+                <input type="hidden" name="radius" value={radius ?? 3000} />
                 <div>
                   <label className="mb-2 block text-sm font-medium">
                     検索場所（地名・住所・緯度経度など）
@@ -245,7 +249,38 @@ export const SearchPage = ({
                     </p>
                   )}
                 </div>
-
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    検索範囲（メートル）
+                  </label>
+                  <Controller
+                    name="radius"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">{field.value ?? 3000}m</span>
+                          <span className="text-xs text-gray-500">
+                            100m - 50km
+                          </span>
+                        </div>
+                        <Slider
+                          value={[field.value ?? 3000]}
+                          onValueChange={(value) => field.onChange(value[0])}
+                          min={100}
+                          max={50000}
+                          step={100}
+                          className="w-full"
+                        />
+                      </div>
+                    )}
+                  />
+                  {errors.radius && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.radius.message}
+                    </p>
+                  )}
+                </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium">
                     カテゴリ（任意）
@@ -498,6 +533,7 @@ export const SearchPage = ({
             geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined
           }
           selectedMarkerId={selectedMarkerId}
+          radius={radius ?? 3000}
           onMapMove={handleMapMove}
           onMarkerClick={handleMarkerClick}
         />

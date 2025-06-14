@@ -9,6 +9,7 @@ type Props = {
     category?: string;
     googleTypes?: string;
     yahooGenres?: string;
+    radius?: string;
   }>;
 };
 
@@ -22,11 +23,13 @@ export default async function Page({ searchParams: _searchParams }: Props) {
   const yahooGenres = searchParams?.yahooGenres
     ? searchParams.yahooGenres.split(",")
     : [];
+  const radius = searchParams?.radius ? parseInt(searchParams.radius, 10) : 3000;
   const { geocodeResult, yahooData, googleData } = await getPageHook({
     address,
     category,
     googleTypes,
     yahooGenres,
+    radius,
   });
 
   async function handleSubmit(_: boolean, formData: FormData): Promise<boolean> {
@@ -35,6 +38,8 @@ export default async function Page({ searchParams: _searchParams }: Props) {
     const category = formData.get("category") as string;
     const googleTypes = formData.getAll("googleTypes") as string[];
     const yahooGenres = formData.getAll("yahooGenres") as string[];
+    const radiusStr = formData.get("radius") as string;
+    const radius = radiusStr ? parseInt(radiusStr, 10) : 3000;
     const params = new URLSearchParams();
     if (address) params.set("address", address);
     if (category) params.set("category", category);
@@ -42,6 +47,8 @@ export default async function Page({ searchParams: _searchParams }: Props) {
       params.set("googleTypes", googleTypes.join(","));
     if (yahooGenres.length > 0)
       params.set("yahooGenres", yahooGenres.join(","));
+    if (radius !== 3000)
+      params.set("radius", radius.toString());
     redirect(`/search?${params.toString()}`);
   }
 
@@ -57,6 +64,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
           category,
           googleTypes,
           yahooGenres,
+          radius,
         }}
       />
     </HydrateClient>

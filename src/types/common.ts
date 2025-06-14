@@ -60,6 +60,7 @@ export type InitialValues = {
   category?: string;
   googleTypes?: string[];
   yahooGenres?: string[];
+  radius?: number;
 };
 
 export type MarkerData = {

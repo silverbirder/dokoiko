@@ -16,16 +16,18 @@ export const yahooRouter = createTRPCRouter({
         category: z.string(),
         page: z.number().default(1),
         selectedGenres: z.array(z.string()).max(3).optional(),
+        radius: z.number().min(100).max(50000).default(3000),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, category, page, selectedGenres } = input;
+      const { lat, lng, category, page, selectedGenres, radius } = input;
       const { results, hasNextPage } = await getYahooLocalSearch(
         lat,
         lng,
         category,
         page,
         selectedGenres,
+        radius,
       );
       return {
         lat,
@@ -42,6 +44,7 @@ const getYahooLocalSearch = async (
   category: string,
   page = 1,
   selectedGenres?: string[],
+  searchRadius = radius,
 ) => {
   const now = new Date().getTime();
 
@@ -74,7 +77,7 @@ const getYahooLocalSearch = async (
     start: ((page - 1) * 20 + 1).toString(),
     sort: "hybrid",
     detail: "full",
-    dist: (radius / 1000).toString(),
+    dist: (searchRadius / 1000).toString(),
     // image: "true",
   };
 

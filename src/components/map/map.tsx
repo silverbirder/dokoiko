@@ -12,7 +12,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect } from "react";
-import { radius } from "@/server/api/routers/data";
+import { radius as defaultRadius } from "@/server/api/routers/data";
 import type { Position, MarkerData } from "@/types/common";
 
 L.Icon.Default.mergeOptions({
@@ -26,6 +26,7 @@ type Props = {
   addressPosition?: Position;
   markers?: MarkerData[];
   selectedMarkerId?: number;
+  radius?: number;
   onMapMove?: (center: Position) => void;
   onMarkerClick?: (index: number) => void;
 };
@@ -103,6 +104,7 @@ export const Map = ({
   addressPosition,
   markers,
   selectedMarkerId,
+  radius = defaultRadius,
   onMapMove,
   onMarkerClick,
 }: Props) => {
