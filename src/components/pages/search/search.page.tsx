@@ -82,7 +82,6 @@ export const SearchPage = ({
     markers,
     isMore,
     mapPosition,
-    selectedMarkerId,
     selectedCategory,
     googleTypes,
     yahooGenres,
@@ -94,6 +93,7 @@ export const SearchPage = ({
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
+    handleMarkerClick,
     handleMoreClick,
     handleToggleResults,
     handleMapMove,
@@ -343,6 +343,7 @@ export const SearchPage = ({
                 {results.map((item, index) => (
                   <Card
                     key={index}
+                    data-card-index={index}
                     className="inline-block max-w-[350px] min-w-[300px] cursor-pointer transition-shadow hover:shadow-lg"
                     onClick={() =>
                       item.position && handleCardClick(item.position, index)
@@ -490,8 +491,8 @@ export const SearchPage = ({
           addressPosition={
             geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined
           }
-          selectedMarkerId={selectedMarkerId}
           onMapMove={handleMapMove}
+          onMarkerClick={handleMarkerClick}
         />
       </div>
     </div>

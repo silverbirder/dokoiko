@@ -25,8 +25,8 @@ type Props = {
   position?: Position;
   addressPosition?: Position;
   markers?: MarkerData[];
-  selectedMarkerId?: number;
   onMapMove?: (center: Position) => void;
+  onMarkerClick?: (index: number) => void;
 };
 
 const CENTER_POSITION: Position = [34.70262392204351, 135.49587252721363];
@@ -38,25 +38,6 @@ const MapCenterUpdater = ({ position }: { position?: Position }) => {
       map.setView(position, map.getZoom());
     }
   }, [position, map]);
-  return null;
-};
-
-const PopupController = ({
-  selectedMarkerId,
-  markers,
-}: {
-  selectedMarkerId?: number;
-  markers?: MarkerData[];
-}) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (selectedMarkerId !== undefined && markers?.[selectedMarkerId]) {
-      const marker = markers[selectedMarkerId];
-      map.openPopup(marker.popupText, marker.position);
-    }
-  }, [selectedMarkerId, markers, map]);
-
   return null;
 };
 
@@ -101,8 +82,8 @@ export const Map = ({
   position,
   addressPosition,
   markers,
-  selectedMarkerId,
   onMapMove,
+  onMarkerClick,
 }: Props) => {
   return (
     <MapContainer
@@ -113,7 +94,6 @@ export const Map = ({
     >
       <MapCenterUpdater position={position} />
       <MarkersBoundsUpdater markers={markers} />
-      <PopupController selectedMarkerId={selectedMarkerId} markers={markers} />
       <MapEventsHandler onMapMove={onMapMove} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -132,7 +112,17 @@ export const Map = ({
         />
       )}
       {markers?.map((marker, index) => (
-        <Marker key={index} position={marker.position}>
+        <Marker
+          key={index}
+          position={marker.position}
+          eventHandlers={{
+            click: () => {
+              if (onMarkerClick) {
+                onMarkerClick(index);
+              }
+            },
+          }}
+        >
           <Popup autoClose={false} closeOnClick={false} autoPan={true}>
             {marker.popupText}
           </Popup>

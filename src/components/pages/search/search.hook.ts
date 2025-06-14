@@ -49,9 +49,6 @@ export const useSearchPage = ({
     Position | undefined
   >(geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined);
   const [showResearchButton, setShowResearchButton] = useState(false);
-  const [selectedMarkerId, setSelectedMarkerId] = useState<
-    number | undefined
-  >();
   const [isResultsVisible, setIsResultsVisible] = useState(true);
   const [yahooData, setYahooData] = useState(initialYahooData);
   const [page, setPage] = useState(1);
@@ -203,8 +200,28 @@ export const useSearchPage = ({
 
   const handleCardClick = useCallback((position: Position, index: number) => {
     setMapPosition(position);
-    setSelectedMarkerId(index);
   }, []);
+
+  const handleMarkerClick = useCallback(
+    (index: number) => {
+      if (!isResultsVisible) {
+        setIsResultsVisible(true);
+      }
+      setTimeout(() => {
+        const cardElement = document.querySelector(
+          `[data-card-index="${index}"]`,
+        );
+        if (cardElement) {
+          cardElement.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+          });
+        }
+      }, 100);
+    },
+    [isResultsVisible],
+  );
 
   const handleToggleResults = useCallback(() => {
     setIsResultsVisible(!isResultsVisible);
@@ -287,7 +304,6 @@ export const useSearchPage = ({
     markers,
     isMore,
     mapPosition,
-    selectedMarkerId,
     selectedCategory,
     googleTypes,
     yahooGenres,
@@ -299,6 +315,7 @@ export const useSearchPage = ({
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
+    handleMarkerClick,
     handleToggleResults,
     handleMoreClick,
     handleMapMove,
