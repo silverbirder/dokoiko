@@ -58,6 +58,7 @@ export const useSearchPage = ({
   const [googleData, setGoogleData] = useState(initialGoogleData);
   const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>([]);
   const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
@@ -229,43 +230,48 @@ export const useSearchPage = ({
   );
 
   const handleMoreClick = useCallback(async () => {
-    const localGoogleData = await utils.google.searchNearby.fetch({
-      lat: geocodeResult?.lat ?? 0,
-      lng: geocodeResult?.lng ?? 0,
-      selectedTypes: selectedTypes,
-      category: selectedCategory,
-    });
-    const localYahooData = await utils.yahoo.searchLocal.fetch({
-      category: initialValues?.category ?? "",
-      lat: geocodeResult?.lat ?? 0,
-      lng: geocodeResult?.lng ?? 0,
-      page: page + 1,
-      selectedGenres:
-        initialValues?.yahooGenres && initialValues.yahooGenres.length > 0
-          ? initialValues.yahooGenres
-          : undefined,
-    });
-    setSelectedTypes(
-      localGoogleData.types.map((item) => ({
-        name: item.name,
-        pageToken: item.nextPageToken,
-      })),
-    );
-    setGoogleData((prev) => {
-      if (!prev) return localGoogleData;
-      return {
-        ...localGoogleData,
-        results: [...prev.results, ...localGoogleData.results],
-      };
-    });
-    setPage((prev) => prev + 1);
-    setYahooData((prev) => {
-      if (!prev) return localYahooData;
-      return {
-        ...localYahooData,
-        results: [...prev.results, ...localYahooData.results],
-      };
-    });
+    setIsLoadingMore(true);
+    try {
+      const localGoogleData = await utils.google.searchNearby.fetch({
+        lat: geocodeResult?.lat ?? 0,
+        lng: geocodeResult?.lng ?? 0,
+        selectedTypes: selectedTypes,
+        category: selectedCategory,
+      });
+      const localYahooData = await utils.yahoo.searchLocal.fetch({
+        category: initialValues?.category ?? "",
+        lat: geocodeResult?.lat ?? 0,
+        lng: geocodeResult?.lng ?? 0,
+        page: page + 1,
+        selectedGenres:
+          initialValues?.yahooGenres && initialValues.yahooGenres.length > 0
+            ? initialValues.yahooGenres
+            : undefined,
+      });
+      setSelectedTypes(
+        localGoogleData.types.map((item) => ({
+          name: item.name,
+          pageToken: item.nextPageToken,
+        })),
+      );
+      setGoogleData((prev) => {
+        if (!prev) return localGoogleData;
+        return {
+          ...localGoogleData,
+          results: [...prev.results, ...localGoogleData.results],
+        };
+      });
+      setPage((prev) => prev + 1);
+      setYahooData((prev) => {
+        if (!prev) return localYahooData;
+        return {
+          ...localYahooData,
+          results: [...prev.results, ...localYahooData.results],
+        };
+      });
+    } finally {
+      setIsLoadingMore(false);
+    }
   }, [
     utils,
     page,
@@ -289,6 +295,7 @@ export const useSearchPage = ({
     isSearchSheetOpen,
     showResearchButton,
     currentMapCenter,
+    isLoadingMore,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,

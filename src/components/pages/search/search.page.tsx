@@ -90,6 +90,7 @@ export const SearchPage = ({
     isSearchSheetOpen,
     showResearchButton,
     currentMapCenter,
+    isLoadingMore,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
@@ -467,8 +468,13 @@ export const SearchPage = ({
                       size="icon"
                       className="bg-primary-foreground hover:bg-primary-foreground/90 h-12 w-12 rounded-full shadow-lg transition-shadow hover:shadow-xl"
                       onClick={handleMoreClick}
+                      disabled={isLoadingMore}
                     >
-                      <ChevronRight className="h-5 w-5" />
+                      {isLoadingMore ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5" />
+                      )}
                     </Button>
                   </div>
                 )}
