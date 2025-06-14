@@ -118,7 +118,7 @@ export const SearchOptionSelector = ({
           </span>
         </div>
         {filteredGooglePlaceTypes.length > 0 ? (
-          <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto">
+          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto">
             {filteredGooglePlaceTypes.map(([type, label]) => {
               return (
                 <div key={type} className="flex items-center space-x-2 text-xs">
@@ -162,7 +162,7 @@ export const SearchOptionSelector = ({
           </span>
         </div>
         {filteredYahooGenreTypes.length > 0 ? (
-          <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto">
+          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto">
             {filteredYahooGenreTypes.map(([genreCode, label]) => (
               <div
                 key={genreCode}
