@@ -348,14 +348,14 @@ export const SearchPage = ({
                   >
                     <CardHeader className="pb-3">
                       {item.name && (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto overflow-y-hidden">
                           <CardTitle className="min-w-max text-base leading-tight whitespace-nowrap">
                             {item.name}
                           </CardTitle>
                         </div>
                       )}
                       {item.address && (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto overflow-y-hidden">
                           <CardDescription className="min-w-max text-sm leading-relaxed whitespace-nowrap">
                             {item.address}
                           </CardDescription>
@@ -391,7 +391,7 @@ export const SearchPage = ({
                             <p className="text-xs font-medium text-gray-600">
                               タイプ:
                             </p>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto overflow-y-hidden">
                               <div className="flex min-w-max gap-1">
                                 {item.types.map((type, typeIndex) => (
                                   <Badge
@@ -413,7 +413,7 @@ export const SearchPage = ({
                             <p className="text-xs font-medium text-gray-600">
                               タイプ:
                             </p>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto overflow-y-hidden">
                               <div className="flex min-w-max gap-1">
                                 {item.genres.map((genre, genreIndex) => (
                                   <Badge
