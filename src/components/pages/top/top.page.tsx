@@ -25,7 +25,7 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
     <div className="relative flex h-screen w-full items-center justify-center">
       <main className="relative z-10 flex w-full max-w-xl flex-col items-center gap-8 p-4">
         <div className="flex w-full flex-col items-center justify-center gap-2">
-          <div className="bg-primary grid h-32 w-32 grid-cols-2 rounded-lg text-4xl font-bold">
+          <div className="bg-background border-primary grid h-32 w-32 grid-cols-2 rounded-lg border-2 text-4xl font-bold">
             <div className="flex items-center justify-center">
               <span
                 className="bg-gradient-to-br from-green-400 via-blue-500 to-blue-600 bg-clip-text text-transparent"

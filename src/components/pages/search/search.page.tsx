@@ -137,7 +137,7 @@ export const SearchPage = ({
             <Button
               onClick={handleResearchAtCurrentLocation}
               disabled={pending}
-              className="flex items-center gap-2 bg-blue-600 text-white shadow-lg backdrop-blur-sm hover:bg-blue-700"
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground flex items-center gap-2 shadow-lg"
             >
               {pending ? (
                 <>
@@ -158,7 +158,7 @@ export const SearchPage = ({
         <Button
           asChild
           size="icon"
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg"
+          className="bg-background hover:bg-background/90 text-background-foreground shadow-lg"
         >
           <Link href="/">
             <Home className="h-4 w-4" />
@@ -170,7 +170,7 @@ export const SearchPage = ({
           <SheetTrigger asChild>
             <Button
               size="icon"
-              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg"
+              className="bg-background hover:bg-background/90 text-background-foreground shadow-lg"
             >
               <Search className="h-4 w-4" />
             </Button>
@@ -314,19 +314,19 @@ export const SearchPage = ({
               stiffness: 200,
               mass: 0.8,
             }}
-            className="bg-primary absolute right-0 bottom-0 left-0 z-10 overflow-hidden rounded-t-lg shadow-2xl"
+            className="bg-primary/60 absolute right-0 bottom-0 left-0 z-10 overflow-hidden rounded-t-lg shadow-2xl"
           >
-            <div className="bg-primary-foreground/20 border-primary-foreground/10 flex justify-center border-b py-3">
+            <div className="flex justify-start pt-2 pl-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleResults}
-                className="text-primary-foreground hover:bg-primary-foreground/20 flex items-center gap-2 transition-all duration-200"
+                className="flex items-center gap-2 transition-all duration-200 bg-primary-foreground"
               >
                 {isResultsVisible ? (
                   <>
                     <ChevronDown className="h-4 w-4" />
-                    隠す
+                    隠す ({results.length}件)
                   </>
                 ) : (
                   <>
@@ -349,14 +349,14 @@ export const SearchPage = ({
                     <CardHeader className="pb-3">
                       {item.name && (
                         <div className="overflow-x-auto">
-                          <CardTitle className="text-base leading-tight whitespace-nowrap min-w-max">
+                          <CardTitle className="min-w-max text-base leading-tight whitespace-nowrap">
                             {item.name}
                           </CardTitle>
                         </div>
                       )}
                       {item.address && (
                         <div className="overflow-x-auto">
-                          <CardDescription className="text-sm leading-relaxed whitespace-nowrap min-w-max">
+                          <CardDescription className="min-w-max text-sm leading-relaxed whitespace-nowrap">
                             {item.address}
                           </CardDescription>
                         </div>
@@ -392,7 +392,7 @@ export const SearchPage = ({
                               タイプ:
                             </p>
                             <div className="overflow-x-auto">
-                              <div className="flex gap-1 min-w-max">
+                              <div className="flex min-w-max gap-1">
                                 {item.types.map((type, typeIndex) => (
                                   <Badge
                                     key={typeIndex}
@@ -411,10 +411,10 @@ export const SearchPage = ({
                         item.genres.length > 0 && (
                           <div className="space-y-1">
                             <p className="text-xs font-medium text-gray-600">
-                              ジャンル:
+                              タイプ:
                             </p>
                             <div className="overflow-x-auto">
-                              <div className="flex gap-1 min-w-max">
+                              <div className="flex min-w-max gap-1">
                                 {item.genres.map((genre, genreIndex) => (
                                   <Badge
                                     key={genreIndex}
