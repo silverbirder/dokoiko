@@ -358,7 +358,7 @@ export const SearchPage = ({
                         </CardDescription>
                       )}
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-3">
                       {item.image && item.type === "google" ? (
                         <GoogleImage
                           photoReference={item.image}
@@ -380,6 +380,46 @@ export const SearchPage = ({
                           </div>
                         </div>
                       )}
+                      {item.type === "google" &&
+                        item.types &&
+                        item.types.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-gray-600">
+                              タイプ:
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {item.types.map((type, typeIndex) => (
+                                <Badge
+                                  key={typeIndex}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {type.replace(/_/g, " ")}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      {item.type === "yahoo" &&
+                        item.genres &&
+                        item.genres.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium text-gray-600">
+                              ジャンル:
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {item.genres.map((genre, genreIndex) => (
+                                <Badge
+                                  key={genreIndex}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {genre.Name}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                     </CardContent>
                     <CardFooter className="flex flex-col gap-3 pt-4">
                       <div className="flex w-full items-center justify-between">

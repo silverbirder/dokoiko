@@ -141,6 +141,7 @@ const getPlacesNearby = async (
       latitude: r.geometry?.location.lat,
       longitude: r.geometry?.location.lng,
       type: "all",
+      types: r.types,
       now,
     }));
 
@@ -185,6 +186,7 @@ const getPlacesNearby = async (
         latitude: r.geometry?.location.lat,
         longitude: r.geometry?.location.lng,
         type: type.name,
+        types: r.types,
         now,
       }));
 

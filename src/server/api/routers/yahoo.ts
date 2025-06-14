@@ -109,6 +109,7 @@ const getYahooLocalSearch = async (
       address: item.Property?.Address,
       latitude: lat,
       longitude: lng,
+      genres: item.Property?.Genre,
       now,
     };
   });

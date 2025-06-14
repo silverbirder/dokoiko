@@ -17,15 +17,25 @@ export type BaseSearchResult = {
 
 export type GoogleSearchResult = BaseSearchResult & {
   type: string;
+  types?: string[];
 };
 
 export type YahooSearchResult = BaseSearchResult & {
   name: string;
+  genres?: Array<{
+    Code: string;
+    Name: string;
+  }>;
 };
 
 export type UnifiedSearchResult = BaseSearchResult & {
   type: "google" | "yahoo";
   position?: Position;
+  types?: string[];
+  genres?: Array<{
+    Code: string;
+    Name: string;
+  }>;
 };
 
 export type GoogleData = {
