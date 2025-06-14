@@ -29,7 +29,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
     yahooGenres,
   });
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(_: boolean, formData: FormData): Promise<boolean> {
     "use server";
     const address = formData.get("address") as string;
     const category = formData.get("category") as string;

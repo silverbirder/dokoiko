@@ -8,6 +8,7 @@ import {
   Search,
   MapPin,
   Home,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -42,6 +43,7 @@ import {
 import Image from "next/image";
 import { useSearchPage } from "./search.hook";
 import { Controller } from "react-hook-form";
+import { useActionState } from "react";
 import type {
   LatLng,
   GoogleData,
@@ -54,7 +56,7 @@ type Props = {
   geocodeResult: LatLng | null;
   yahooData: YahooData | null;
   googleData: GoogleData | null;
-  onSubmit?: (formData: FormData) => void;
+  onSubmit: (prevState: boolean, formData: FormData) => Promise<boolean>;
   initialValues?: InitialValues;
 };
 
@@ -65,6 +67,8 @@ export const SearchPage = ({
   onSubmit,
   initialValues,
 }: Props) => {
+  const [, action, pending] = useActionState(onSubmit, false);
+
   const {
     form: {
       control,
@@ -82,7 +86,6 @@ export const SearchPage = ({
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,
-    handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
@@ -96,7 +99,6 @@ export const SearchPage = ({
     geocodeResult,
     yahooData,
     googleData,
-    onSubmit,
     initialValues,
   });
 
@@ -118,10 +120,20 @@ export const SearchPage = ({
           >
             <Button
               onClick={handleResearchAtCurrentLocation}
+              disabled={pending}
               className="flex items-center gap-2 bg-blue-600 text-white shadow-lg backdrop-blur-sm hover:bg-blue-700"
             >
-              <MapPin className="h-4 w-4" />
-              この位置で再検索する
+              {pending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  検索中...
+                </>
+              ) : (
+                <>
+                  <MapPin className="h-4 w-4" />
+                  この位置で再検索する
+                </>
+              )}
             </Button>
           </motion.div>
         )}
@@ -155,7 +167,28 @@ export const SearchPage = ({
               </SheetDescription>
             </SheetHeader>
             <div className="px-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form action={action} className="space-y-4">
+                <input
+                  type="hidden"
+                  name="category"
+                  value={selectedCategory ?? ""}
+                />
+                {googleTypes.map((type, index) => (
+                  <input
+                    key={`google-${index}`}
+                    type="hidden"
+                    name="googleTypes"
+                    value={type}
+                  />
+                ))}
+                {yahooGenres.map((genre, index) => (
+                  <input
+                    key={`yahoo-${index}`}
+                    type="hidden"
+                    name="yahooGenres"
+                    value={genre}
+                  />
+                ))}
                 <div>
                   <label className="mb-2 block text-sm font-medium">
                     検索場所
@@ -167,13 +200,24 @@ export const SearchPage = ({
                       render={({ field }) => (
                         <Input
                           {...field}
+                          name="address"
                           type="text"
                           placeholder="例: 大阪駅"
                           className="bg-white"
+                          disabled={pending}
                         />
                       )}
                     />
-                    <Button type="submit">検索</Button>
+                    <Button type="submit" disabled={pending}>
+                      {pending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          検索中...
+                        </>
+                      ) : (
+                        "検索"
+                      )}
+                    </Button>
                   </div>
                   {errors.address && (
                     <p className="mt-1 text-sm text-red-500">

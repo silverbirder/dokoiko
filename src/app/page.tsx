@@ -12,7 +12,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
   const searchParams = await _searchParams;
   const address = searchParams?.address ?? "";
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(_: boolean, formData: FormData): Promise<boolean> {
     "use server";
     const address = formData.get("address") as string;
     const params = new URLSearchParams();

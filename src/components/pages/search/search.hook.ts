@@ -33,7 +33,6 @@ type Props = {
   geocodeResult: LatLng | null;
   yahooData: YahooData | null;
   googleData: GoogleData | null;
-  onSubmit?: (formData: FormData) => void;
   initialValues?: InitialValues;
 };
 
@@ -41,7 +40,6 @@ export const useSearchPage = ({
   geocodeResult,
   yahooData: initialYahooData,
   googleData: initialGoogleData,
-  onSubmit,
   initialValues,
 }: Props) => {
   const [mapPosition, setMapPosition] = useState<Position | undefined>(
@@ -203,27 +201,6 @@ export const useSearchPage = ({
     [form],
   );
 
-  const handleFormSubmit = useCallback(
-    (data: SearchFormData) => {
-      if (!onSubmit) return;
-      const formData = new FormData();
-      formData.append("address", data.address);
-      if (data.category) {
-        formData.append("category", data.category);
-      }
-      data.googleTypes.forEach((type) => {
-        formData.append("googleTypes", type);
-      });
-      data.yahooGenres.forEach((genre) => {
-        formData.append("yahooGenres", genre);
-      });
-      onSubmit(formData);
-    },
-    [onSubmit],
-  );
-
-  const handleSubmit = form.handleSubmit(handleFormSubmit);
-
   const handleCardClick = useCallback((position: Position, index: number) => {
     setMapPosition(position);
     setSelectedMarkerId(index);
@@ -253,21 +230,8 @@ export const useSearchPage = ({
   );
 
   const handleResearchAtCurrentLocation = useCallback(() => {
-    if (!currentMapCenter || !onSubmit) return;
-    const formData = new FormData();
-    formData.append("address", `${currentMapCenter[0]},${currentMapCenter[1]}`);
-    if (selectedCategory) {
-      formData.append("category", selectedCategory);
-    }
-    googleTypes.forEach((type) => {
-      formData.append("googleTypes", type);
-    });
-    yahooGenres.forEach((genre) => {
-      formData.append("yahooGenres", genre);
-    });
     setShowResearchButton(false);
-    onSubmit(formData);
-  }, [currentMapCenter, onSubmit, selectedCategory, googleTypes, yahooGenres]);
+  }, []);
 
   const handleMoreClick = useCallback(async () => {
     const localGoogleData = await utils.google.searchNearby.fetch({
@@ -331,7 +295,6 @@ export const useSearchPage = ({
     isSearchSheetOpen,
     showResearchButton,
     currentMapCenter,
-    handleSubmit,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,

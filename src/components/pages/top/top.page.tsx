@@ -3,19 +3,21 @@
 import { Button, Input, MapCaller } from "@/components";
 import { useTopPage } from "./top.hook";
 import { Controller } from "react-hook-form";
+import { Loader2 } from "lucide-react";
+import { useActionState } from "react";
 import type { InitialValues } from "@/types/common";
 
 type Props = {
-  onSubmit?: (formData: FormData) => void;
+  onSubmit: (prevState: boolean, formData: FormData) => Promise<boolean>;
   initialValues?: InitialValues;
 };
 
 export const TopPage = ({ onSubmit, initialValues }: Props) => {
+  const [, action, pending] = useActionState(onSubmit, false);
+
   const {
     form: { control },
-    handleSubmit,
   } = useTopPage({
-    onSubmit,
     initialValues,
   });
 
@@ -73,7 +75,7 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
             外に出かけたい気分なら、どこいこ！
           </div>
         </div>
-        <form onSubmit={handleSubmit} className="w-full">
+        <form action={action} className="w-full">
           <div className="flex gap-1">
             <Controller
               name="address"
@@ -81,13 +83,24 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
               render={({ field }) => (
                 <Input
                   {...field}
+                  name="address"
                   type="text"
                   placeholder="例: 大阪駅"
                   className="bg-background"
+                  disabled={pending}
                 />
               )}
             />
-            <Button type="submit">検索</Button>
+            <Button type="submit" disabled={pending}>
+              {pending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  検索中...
+                </>
+              ) : (
+                "検索"
+              )}
+            </Button>
           </div>
         </form>
       </main>
