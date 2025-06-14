@@ -11,7 +11,7 @@ const baseUrl = process.env.BASE_URL ?? "http://dokoiko.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: "どこいこ",
-  description: "どこいこは、あなたの行きたい場所を見つけるためのアプリです。",
+  description: "あなたの行きたい場所を見つけるためのアプリです。",
   robots: {
     index: true,
   },
