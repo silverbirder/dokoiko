@@ -348,14 +348,18 @@ export const SearchPage = ({
                   >
                     <CardHeader className="pb-3">
                       {item.name && (
-                        <CardTitle className="text-base leading-tight break-words whitespace-normal">
-                          {item.name}
-                        </CardTitle>
+                        <div className="overflow-x-auto">
+                          <CardTitle className="text-base leading-tight whitespace-nowrap min-w-max">
+                            {item.name}
+                          </CardTitle>
+                        </div>
                       )}
                       {item.address && (
-                        <CardDescription className="text-sm leading-relaxed break-words whitespace-normal">
-                          {item.address}
-                        </CardDescription>
+                        <div className="overflow-x-auto">
+                          <CardDescription className="text-sm leading-relaxed whitespace-nowrap min-w-max">
+                            {item.address}
+                          </CardDescription>
+                        </div>
                       )}
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -387,16 +391,18 @@ export const SearchPage = ({
                             <p className="text-xs font-medium text-gray-600">
                               タイプ:
                             </p>
-                            <div className="flex flex-wrap gap-1">
-                              {item.types.map((type, typeIndex) => (
-                                <Badge
-                                  key={typeIndex}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {type.replace(/_/g, " ")}
-                                </Badge>
-                              ))}
+                            <div className="overflow-x-auto">
+                              <div className="flex gap-1 min-w-max">
+                                {item.types.map((type, typeIndex) => (
+                                  <Badge
+                                    key={typeIndex}
+                                    variant="outline"
+                                    className="text-xs whitespace-nowrap"
+                                  >
+                                    {type.replace(/_/g, " ")}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         )}
@@ -407,16 +413,18 @@ export const SearchPage = ({
                             <p className="text-xs font-medium text-gray-600">
                               ジャンル:
                             </p>
-                            <div className="flex flex-wrap gap-1">
-                              {item.genres.map((genre, genreIndex) => (
-                                <Badge
-                                  key={genreIndex}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {genre.Name}
-                                </Badge>
-                              ))}
+                            <div className="overflow-x-auto">
+                              <div className="flex gap-1 min-w-max">
+                                {item.genres.map((genre, genreIndex) => (
+                                  <Badge
+                                    key={genreIndex}
+                                    variant="outline"
+                                    className="text-xs whitespace-nowrap"
+                                  >
+                                    {genre.Name}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         )}
