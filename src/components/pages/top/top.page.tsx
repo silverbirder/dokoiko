@@ -71,7 +71,7 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
               </span>
             </div>
           </div>
-          <div className="text-primary-foreground text-center text-xl font-semibold tracking-wide">
+          <div className="text-primary bg-primary-foreground rounded-lg p-2 text-center text-xl font-semibold tracking-wide">
             外に出かけたい気分なら、どこいこ！
           </div>
         </div>
