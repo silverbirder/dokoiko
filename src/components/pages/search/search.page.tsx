@@ -210,7 +210,7 @@ export const SearchPage = ({
                 ))}
                 <div>
                   <label className="mb-2 block text-sm font-medium">
-                    検索場所
+                    検索場所（地名・住所・緯度経度など）
                   </label>
                   <div className="flex gap-2">
                     <Controller
