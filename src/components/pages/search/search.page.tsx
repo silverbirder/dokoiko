@@ -7,6 +7,7 @@ import {
   ChevronUp,
   Search,
   MapPin,
+  Home,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -125,6 +126,17 @@ export const SearchPage = ({
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="absolute top-4 left-4 z-20">
+        <Button
+          asChild
+          size="icon"
+          className="bg-white/90 shadow-lg backdrop-blur-sm hover:bg-white"
+        >
+          <Link href="/">
+            <Home className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
       <div className="absolute top-4 right-4 z-20">
         <Sheet open={isSearchSheetOpen} onOpenChange={setIsSearchSheetOpen}>
           <SheetTrigger asChild>
