@@ -9,6 +9,7 @@ import {
   MapPin,
   Home,
   Loader2,
+  ChevronRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -321,7 +322,7 @@ export const SearchPage = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleResults}
-                className="flex items-center gap-2 transition-all duration-200 bg-primary-foreground"
+                className="bg-primary-foreground hover:bg-primary-foreground/90 flex items-center gap-2 transition-all duration-200"
               >
                 {isResultsVisible ? (
                   <>
@@ -463,10 +464,11 @@ export const SearchPage = ({
                   <div className="inline-flex items-center justify-center">
                     <Button
                       variant="outline"
-                      className="h-full bg-white/90 backdrop-blur-sm"
+                      size="icon"
+                      className="bg-primary-foreground hover:bg-primary-foreground/90 h-12 w-12 rounded-full shadow-lg transition-shadow hover:shadow-xl"
                       onClick={handleMoreClick}
                     >
-                      もっと見る
+                      <ChevronRight className="h-5 w-5" />
                     </Button>
                   </div>
                 )}
