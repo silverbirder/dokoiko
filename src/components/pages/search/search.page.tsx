@@ -43,7 +43,7 @@ import {
 import Image from "next/image";
 import { useSearchPage } from "./search.hook";
 import { Controller } from "react-hook-form";
-import { useActionState } from "react";
+import { useActionState, useCallback, startTransition } from "react";
 import type {
   LatLng,
   GoogleData,
@@ -68,6 +68,12 @@ export const SearchPage = ({
   initialValues,
 }: Props) => {
   const [, action, pending] = useActionState(onSubmit, false);
+  const searchPageData = useSearchPage({
+    geocodeResult,
+    yahooData,
+    googleData,
+    initialValues,
+  });
 
   const {
     form: {
@@ -86,21 +92,36 @@ export const SearchPage = ({
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,
+    currentMapCenter,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
     handleMoreClick,
     handleToggleResults,
     handleMapMove,
-    handleResearchAtCurrentLocation,
     setIsAdvancedOptionsOpen,
     setIsSearchSheetOpen,
-  } = useSearchPage({
-    geocodeResult,
-    yahooData,
-    googleData,
-    initialValues,
-  });
+  } = searchPageData;
+
+  const handleResearchAtCurrentLocation = useCallback(() => {
+    if (!currentMapCenter) return;
+
+    const formData = new FormData();
+    formData.append("address", `${currentMapCenter[0]},${currentMapCenter[1]}`);
+    if (selectedCategory) {
+      formData.append("category", selectedCategory);
+    }
+    googleTypes.forEach((type) => {
+      formData.append("googleTypes", type);
+    });
+    yahooGenres.forEach((genre) => {
+      formData.append("yahooGenres", genre);
+    });
+
+    startTransition(() => {
+      action(formData);
+    });
+  }, [currentMapCenter, selectedCategory, googleTypes, yahooGenres, action]);
 
   return (
     <div className="relative h-screen w-full">

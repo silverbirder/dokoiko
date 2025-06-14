@@ -229,10 +229,6 @@ export const useSearchPage = ({
     [geocodeResult, calculateDistance],
   );
 
-  const handleResearchAtCurrentLocation = useCallback(() => {
-    setShowResearchButton(false);
-  }, []);
-
   const handleMoreClick = useCallback(async () => {
     const localGoogleData = await utils.google.searchNearby.fetch({
       lat: geocodeResult?.lat ?? 0,
@@ -301,7 +297,6 @@ export const useSearchPage = ({
     handleToggleResults,
     handleMoreClick,
     handleMapMove,
-    handleResearchAtCurrentLocation,
     setIsAdvancedOptionsOpen,
     setIsSearchSheetOpen,
   };
