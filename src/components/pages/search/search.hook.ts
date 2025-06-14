@@ -50,6 +50,9 @@ export const useSearchPage = ({
   >(geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined);
   const [showResearchButton, setShowResearchButton] = useState(false);
   const [isResultsVisible, setIsResultsVisible] = useState(true);
+  const [highlightedCardIndex, setHighlightedCardIndex] = useState<
+    number | null
+  >(null);
   const [yahooData, setYahooData] = useState(initialYahooData);
   const [page, setPage] = useState(1);
   const [googleData, setGoogleData] = useState(initialGoogleData);
@@ -207,6 +210,11 @@ export const useSearchPage = ({
       if (!isResultsVisible) {
         setIsResultsVisible(true);
       }
+      setHighlightedCardIndex(index);
+      setTimeout(() => {
+        setHighlightedCardIndex(null);
+      }, 5000);
+
       setTimeout(() => {
         const cardElement = document.querySelector(
           `[data-card-index="${index}"]`,
@@ -312,6 +320,7 @@ export const useSearchPage = ({
     showResearchButton,
     currentMapCenter,
     isLoadingMore,
+    highlightedCardIndex,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,

@@ -90,6 +90,7 @@ export const SearchPage = ({
     showResearchButton,
     currentMapCenter,
     isLoadingMore,
+    highlightedCardIndex,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
@@ -344,7 +345,11 @@ export const SearchPage = ({
                   <Card
                     key={index}
                     data-card-index={index}
-                    className="inline-block max-w-[350px] min-w-[300px] cursor-pointer transition-shadow hover:shadow-lg"
+                    className={`inline-block max-w-[350px] min-w-[300px] cursor-pointer border-4 transition-all duration-300 hover:shadow-lg ${
+                      highlightedCardIndex === index
+                        ? "border-secondary"
+                        : "border-primary-foreground"
+                    }`}
                     onClick={() =>
                       item.position && handleCardClick(item.position, index)
                     }
