@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import { type Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Noto_Sans_JP } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="ja" className={`${noto.className}`}>
       <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        {process.env.GA_ID && <GoogleAnalytics gaId={process.env.GA_ID} />}
       </body>
     </html>
   );
