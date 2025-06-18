@@ -1,3 +1,4 @@
+export * from "./footer";
 export * from "./google-image";
 export * from "./search-option-selector";
 export * from "./map";

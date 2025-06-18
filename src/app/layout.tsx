@@ -5,6 +5,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { Noto_Sans_JP } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import { Footer } from "@/components";
 
 const baseUrl = process.env.BASE_URL ?? "http://dokoiko.vercel.app";
 
@@ -30,8 +31,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ja" className={`${noto.className}`}>
-      <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+      <body className="min-h-screen flex flex-col">
+        <TRPCReactProvider>
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </TRPCReactProvider>
         {process.env.GA_ID && <GoogleAnalytics gaId={process.env.GA_ID} />}
       </body>
     </html>
