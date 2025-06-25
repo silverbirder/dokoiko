@@ -7,7 +7,7 @@ import { Noto_Sans_JP } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Footer } from "@/components";
 
-const baseUrl = process.env.BASE_URL ?? "http://dokoiko.vercel.app";
+const baseUrl = process.env.BASE_URL ?? "https://dokoiko.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
