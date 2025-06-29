@@ -94,6 +94,7 @@ export const SearchPage = ({
     currentMapCenter,
     isLoadingMore,
     highlightedCardIndex,
+    keyword,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
@@ -119,6 +120,9 @@ export const SearchPage = ({
       formData.append("yahooGenres", genre);
     });
     formData.append("radius", (radius ?? 3000).toString());
+    if (keyword) {
+      formData.append("keyword", keyword);
+    }
 
     startTransition(() => {
       action(formData);
@@ -130,6 +134,7 @@ export const SearchPage = ({
     yahooGenres,
     radius,
     action,
+    keyword,
   ]);
 
   return (
