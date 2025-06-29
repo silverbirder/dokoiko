@@ -10,6 +10,7 @@ type Props = {
     googleTypes?: string;
     yahooGenres?: string;
     radius?: string;
+    keyword?: string;
   }>;
 };
 
@@ -23,16 +24,23 @@ export default async function Page({ searchParams: _searchParams }: Props) {
   const yahooGenres = searchParams?.yahooGenres
     ? searchParams.yahooGenres.split(",")
     : [];
-  const radius = searchParams?.radius ? parseInt(searchParams.radius, 10) : 3000;
+  const radius = searchParams?.radius
+    ? parseInt(searchParams.radius, 10)
+    : 3000;
+  const keyword = searchParams?.keyword ?? "";
   const { geocodeResult, yahooData, googleData } = await getPageHook({
     address,
     category,
     googleTypes,
     yahooGenres,
     radius,
+    keyword,
   });
 
-  async function handleSubmit(_: boolean, formData: FormData): Promise<boolean> {
+  async function handleSubmit(
+    _: boolean,
+    formData: FormData,
+  ): Promise<boolean> {
     "use server";
     const address = formData.get("address") as string;
     const category = formData.get("category") as string;
@@ -40,6 +48,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
     const yahooGenres = formData.getAll("yahooGenres") as string[];
     const radiusStr = formData.get("radius") as string;
     const radius = radiusStr ? parseInt(radiusStr, 10) : 3000;
+    const keyword = formData.get("keyword") as string;
     const params = new URLSearchParams();
     if (address) params.set("address", address);
     if (category) params.set("category", category);
@@ -47,8 +56,8 @@ export default async function Page({ searchParams: _searchParams }: Props) {
       params.set("googleTypes", googleTypes.join(","));
     if (yahooGenres.length > 0)
       params.set("yahooGenres", yahooGenres.join(","));
-    if (radius !== 3000)
-      params.set("radius", radius.toString());
+    if (radius !== 3000) params.set("radius", radius.toString());
+    if (keyword) params.set("keyword", keyword);
     redirect(`/search?${params.toString()}`);
   }
 
@@ -65,6 +74,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
           googleTypes,
           yahooGenres,
           radius,
+          keyword: searchParams?.keyword ?? "",
         }}
       />
     </HydrateClient>

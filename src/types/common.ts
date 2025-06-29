@@ -57,6 +57,7 @@ export type YahooData = {
 
 export type InitialValues = {
   address?: string;
+  keyword?: string;
   category?: string;
   googleTypes?: string[];
   yahooGenres?: string[];

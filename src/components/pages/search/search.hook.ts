@@ -18,6 +18,7 @@ import type {
 
 const searchFormSchema = z.object({
   address: z.string().min(1, "住所を入力してください"),
+  keyword: z.string().optional(),
   category: z.string().optional(),
   googleTypes: z
     .array(z.string())
@@ -25,7 +26,11 @@ const searchFormSchema = z.object({
   yahooGenres: z
     .array(z.string())
     .max(3, "Yahoo検索オプションは最大3つまでです"),
-  radius: z.number().min(100, "最小100mです").max(50000, "最大50kmです").optional(),
+  radius: z
+    .number()
+    .min(100, "最小100mです")
+    .max(50000, "最大50kmです")
+    .optional(),
 });
 
 type SearchFormData = z.infer<typeof searchFormSchema>;
@@ -60,12 +65,15 @@ export const useSearchPage = ({
   const [selectedTypes, setSelectedTypes] = useState<GoogleTypeSelection[]>([]);
   const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>(undefined);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<number | undefined>(
+    undefined,
+  );
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchFormSchema),
     defaultValues: {
       address: initialValues?.address ?? "",
+      keyword: initialValues?.keyword ?? "",
       category: initialValues?.category ?? "",
       googleTypes: initialValues?.googleTypes ?? [],
       yahooGenres: initialValues?.yahooGenres ?? [],
@@ -76,6 +84,7 @@ export const useSearchPage = ({
   const googleTypes = form.watch("googleTypes");
   const yahooGenres = form.watch("yahooGenres");
   const radius = form.watch("radius");
+  const keyword = form.watch("keyword");
 
   const utils = api.useUtils();
 
@@ -268,6 +277,7 @@ export const useSearchPage = ({
         lng: geocodeResult?.lng ?? 0,
         selectedTypes: selectedTypes,
         category: selectedCategory,
+        keyword: keyword,
         radius: radius ?? 3000,
       });
       const localYahooData = await utils.yahoo.searchLocal.fetch({
@@ -279,6 +289,7 @@ export const useSearchPage = ({
           initialValues?.yahooGenres && initialValues.yahooGenres.length > 0
             ? initialValues.yahooGenres
             : undefined,
+        keyword: keyword,
         radius: radius ?? 3000,
       });
       setSelectedTypes(
@@ -313,6 +324,7 @@ export const useSearchPage = ({
     selectedTypes,
     selectedCategory,
     radius,
+    keyword,
   ]);
 
   return {
@@ -326,6 +338,7 @@ export const useSearchPage = ({
     googleTypes,
     yahooGenres,
     radius,
+    keyword,
     isResultsVisible,
     isSearchSheetOpen,
     showResearchButton,

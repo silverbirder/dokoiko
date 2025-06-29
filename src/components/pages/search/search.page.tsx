@@ -123,7 +123,14 @@ export const SearchPage = ({
     startTransition(() => {
       action(formData);
     });
-  }, [currentMapCenter, selectedCategory, googleTypes, yahooGenres, radius, action]);
+  }, [
+    currentMapCenter,
+    selectedCategory,
+    googleTypes,
+    yahooGenres,
+    radius,
+    action,
+  ]);
 
   return (
     <div className="relative h-screen w-full">
@@ -215,6 +222,25 @@ export const SearchPage = ({
                 <input type="hidden" name="radius" value={radius ?? 3000} />
                 <div>
                   <label className="mb-2 block text-sm font-medium">
+                    検索キーワード
+                  </label>
+                  <Controller
+                    name="keyword"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        name="keyword"
+                        type="text"
+                        placeholder="例: カフェ、ラーメン、ATMなど"
+                        className="bg-white"
+                        disabled={pending}
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
                     検索場所（地名・住所・緯度経度など）
                   </label>
                   <div className="flex gap-2">
@@ -259,7 +285,9 @@ export const SearchPage = ({
                     render={({ field }) => (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm">{field.value ?? 3000}m</span>
+                          <span className="text-sm">
+                            {field.value ?? 3000}m
+                          </span>
                           <span className="text-xs text-gray-500">
                             100m - 50km
                           </span>

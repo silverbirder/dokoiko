@@ -7,6 +7,7 @@ type Props = {
   googleTypes: string[];
   yahooGenres: string[];
   radius: number;
+  keyword?: string;
 };
 
 type PageHookResult = {
@@ -21,6 +22,7 @@ export async function getPageHook({
   googleTypes,
   yahooGenres,
   radius,
+  keyword,
 }: Props): Promise<PageHookResult> {
   let geocodeResult: LatLng | null = null;
 
@@ -49,6 +51,7 @@ export async function getPageHook({
               : undefined,
           category,
           radius,
+          keyword,
         })
         .catch(() => null)
     : null;
@@ -61,6 +64,7 @@ export async function getPageHook({
           category,
           selectedGenres: yahooGenres.length > 0 ? yahooGenres : undefined,
           radius,
+          keyword,
         })
         .catch(() => null)
     : null;

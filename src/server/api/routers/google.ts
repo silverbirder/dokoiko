@@ -51,11 +51,12 @@ export const googleRouter = createTRPCRouter({
           .max(3)
           .optional(),
         category: z.string().optional(),
+        keyword: z.string().optional(),
         radius: z.number().min(100).max(50000).default(3000),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, selectedTypes, category, radius } = input;
+      const { lat, lng, selectedTypes, category, keyword, radius } = input;
       let types =
         selectedTypes && selectedTypes.length > 0 ? selectedTypes : [];
       if (types.length === 0 && category) {
@@ -71,6 +72,7 @@ export const googleRouter = createTRPCRouter({
         lng,
         types,
         radius,
+        keyword,
       );
 
       return {
@@ -110,6 +112,7 @@ const getPlacesNearby = async (
   lng: number,
   types: GoogleTypeSelection[],
   searchRadius = radius,
+  keyword?: string,
 ) => {
   const now = new Date().getTime();
   const allResults: GoogleSearchResult[] = [];
@@ -123,6 +126,9 @@ const getPlacesNearby = async (
       radius: searchRadius,
       key: GOOGLE_API_KEY,
     };
+    if (keyword) {
+      requestParams.keyword = keyword;
+    }
 
     console.log("[Google API] getPlacesNearby parameters:", requestParams);
     const res = await client.placesNearby({
@@ -160,13 +166,14 @@ const getPlacesNearby = async (
         radius: searchRadius,
         key: GOOGLE_API_KEY,
       };
-
       if (type.pageToken) {
         requestParams.pagetoken = type.pageToken;
       }
-
       if (type.name !== "all") {
         requestParams.type = type.name;
+      }
+      if (keyword) {
+        requestParams.keyword = keyword;
       }
 
       console.log("[Google API] getPlacesNearby parameters:", requestParams);

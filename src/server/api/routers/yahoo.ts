@@ -16,11 +16,13 @@ export const yahooRouter = createTRPCRouter({
         category: z.string(),
         page: z.number().default(1),
         selectedGenres: z.array(z.string()).max(3).optional(),
+        keyword: z.string().optional(),
         radius: z.number().min(100).max(50000).default(3000),
       }),
     )
     .query(async ({ input }) => {
-      const { lat, lng, category, page, selectedGenres, radius } = input;
+      const { lat, lng, category, page, selectedGenres, keyword, radius } =
+        input;
       const { results, hasNextPage } = await getYahooLocalSearch(
         lat,
         lng,
@@ -28,6 +30,7 @@ export const yahooRouter = createTRPCRouter({
         page,
         selectedGenres,
         radius,
+        keyword,
       );
       return {
         lat,
@@ -45,6 +48,7 @@ const getYahooLocalSearch = async (
   page = 1,
   selectedGenres?: string[],
   searchRadius = radius,
+  keyword?: string,
 ) => {
   const now = new Date().getTime();
 
@@ -68,6 +72,7 @@ const getYahooLocalSearch = async (
     detail: string;
     dist: string;
     gc?: string;
+    query?: string;
   } = {
     appid: YAHOO_API_KEY,
     lon: lng.toString(),
@@ -83,6 +88,9 @@ const getYahooLocalSearch = async (
 
   if (category && genreCodes && genreCodes.length > 0) {
     requestParams.gc = genreCodes.join(",");
+  }
+  if (keyword) {
+    requestParams.query = keyword;
   }
 
   const params = new URLSearchParams(requestParams);
