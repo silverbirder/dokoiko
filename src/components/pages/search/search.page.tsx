@@ -36,6 +36,7 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
+  SheetFooter,
   SheetTitle,
   SheetTrigger,
 } from "@/components";
@@ -201,8 +202,8 @@ export const SearchPage = ({
                 検索したい場所とオプションを選択してください。
               </SheetDescription>
             </SheetHeader>
-            <div className="px-4">
-              <form action={action} className="space-y-4">
+            <div className="px-4 overflow-y-auto">
+              <form id="search-form" action={action} className="space-y-4">
                 <input
                   type="hidden"
                   name="category"
@@ -263,16 +264,6 @@ export const SearchPage = ({
                         />
                       )}
                     />
-                    <Button type="submit" disabled={pending}>
-                      {pending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          検索中...
-                        </>
-                      ) : (
-                        "検索"
-                      )}
-                    </Button>
                   </div>
                   {errors.address && (
                     <p className="mt-1 text-sm text-red-500">
@@ -372,6 +363,18 @@ export const SearchPage = ({
                 </div>
               </form>
             </div>
+            <SheetFooter className="px-4 py-4 border-t bg-white">
+              <Button type="submit" form="search-form" disabled={pending} className="w-full">
+                {pending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    検索中...
+                  </>
+                ) : (
+                  "検索"
+                )}
+              </Button>
+            </SheetFooter>
           </SheetContent>
         </Sheet>
       </div>
