@@ -5,6 +5,8 @@ import { z } from "zod";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { api } from "@/trpc/react";
 import { getDistance } from "geolib";
+import { useFavorites } from "@/hooks/useFavorites";
+import { createFavoriteItemFromResult } from "@/lib/favorites";
 import type {
   LatLng,
   GoogleData,
@@ -48,6 +50,7 @@ export const useSearchPage = ({
   googleData: initialGoogleData,
   initialValues,
 }: Props) => {
+  const { checkIsFavorite } = useFavorites();
   const [mapPosition, setMapPosition] = useState<Position | undefined>(
     geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
   );
@@ -133,11 +136,15 @@ export const useSearchPage = ({
     (): MarkerData[] =>
       results
         .filter((item) => item.latitude && item.longitude)
-        .map((item) => ({
-          position: [item.latitude!, item.longitude!] as Position,
-          popupText: item.name ?? item.address ?? "",
-        })),
-    [results],
+        .map((item) => {
+          const favoriteItem = createFavoriteItemFromResult(item);
+          return {
+            position: [item.latitude!, item.longitude!] as Position,
+            popupText: item.name ?? item.address ?? "",
+            isFavorite: checkIsFavorite(favoriteItem.id),
+          };
+        }),
+    [results, checkIsFavorite],
   );
 
   useEffect(() => {

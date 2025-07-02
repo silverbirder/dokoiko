@@ -21,6 +21,28 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/leaflet/marker-shadow.png",
 });
 
+// お気に入りマーカー用のアイコン（CSSで色を変更）
+const favoriteIcon = new L.Icon({
+  iconUrl: "/leaflet/marker-icon.png",
+  iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+  shadowUrl: "/leaflet/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: "favorite-marker",
+});
+
+const defaultIcon = new L.Icon({
+  iconUrl: "/leaflet/marker-icon.png",
+  iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+  shadowUrl: "/leaflet/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
 type Props = {
   position?: Position;
   addressPosition?: Position;
@@ -139,6 +161,7 @@ export const Map = ({
         <Marker
           key={index}
           position={marker.position}
+          icon={marker.isFavorite ? favoriteIcon : defaultIcon}
           eventHandlers={{
             click: () => {
               if (onMarkerClick) {

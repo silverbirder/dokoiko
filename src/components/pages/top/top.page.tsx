@@ -35,7 +35,7 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
           <Link href="/favorites">
             <Heart className="h-4 w-4" />
             {isHydrated && favoritesCount > 0 && (
-              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs">
+              <span className="bg-accent text-accent-foreground absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs">
                 {favoritesCount > 99 ? "99+" : favoritesCount}
               </span>
             )}

@@ -13,8 +13,8 @@ import {
   YahooCredit,
   FavoriteButton,
 } from "@/components";
-import { useFavorites } from "@/hooks";
-import type { FavoriteItem } from "@/lib";
+import { useFavorites } from "@/hooks/useFavorites";
+import type { FavoriteItem } from "@/lib/favorites";
 import { ImageIcon, MapPin, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

@@ -43,7 +43,7 @@ export const FavoriteButton = ({ item, size = "md", className }: Props) => {
         className={cn(
           sizeClasses[size],
           "rounded-full transition-all duration-200 hover:scale-110",
-          "text-muted-foreground hover:text-primary hover:bg-primary/10",
+          "text-muted-foreground hover:text-accent hover:bg-accent/10",
           className,
         )}
         disabled
@@ -62,8 +62,8 @@ export const FavoriteButton = ({ item, size = "md", className }: Props) => {
         sizeClasses[size],
         "rounded-full transition-all duration-200 hover:scale-110",
         isFavorited
-          ? "text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20"
-          : "text-muted-foreground hover:text-primary hover:bg-primary/10",
+          ? "text-accent hover:text-accent/80 bg-accent/10 hover:bg-accent/20"
+          : "text-muted-foreground hover:text-accent hover:bg-accent/10",
         className,
       )}
       title={isFavorited ? "お気に入りから削除" : "お気に入りに追加"}

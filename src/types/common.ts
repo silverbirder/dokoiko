@@ -67,6 +67,7 @@ export type InitialValues = {
 export type MarkerData = {
   position: Position;
   popupText: string;
+  isFavorite?: boolean;
 };
 
 export type GoogleTypeSelection = {
