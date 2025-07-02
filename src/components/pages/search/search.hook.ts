@@ -50,7 +50,7 @@ export const useSearchPage = ({
   googleData: initialGoogleData,
   initialValues,
 }: Props) => {
-  const { checkIsFavorite } = useFavorites();
+  const { checkIsFavorite, favorites } = useFavorites();
   const [mapPosition, setMapPosition] = useState<Position | undefined>(
     geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined,
   );
@@ -59,6 +59,7 @@ export const useSearchPage = ({
   >(geocodeResult ? [geocodeResult.lat, geocodeResult.lng] : undefined);
   const [showResearchButton, setShowResearchButton] = useState(false);
   const [isResultsVisible, setIsResultsVisible] = useState(true);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [highlightedCardIndex, setHighlightedCardIndex] = useState<
     number | null
   >(null);
@@ -132,20 +133,31 @@ export const useSearchPage = ({
     [yahooData, selectedTypes],
   );
 
-  const markers = useMemo(
-    (): MarkerData[] =>
-      results
-        .filter((item) => item.latitude && item.longitude)
-        .map((item) => {
-          const favoriteItem = createFavoriteItemFromResult(item);
-          return {
-            position: [item.latitude!, item.longitude!] as Position,
-            popupText: item.name ?? item.address ?? "",
-            isFavorite: checkIsFavorite(favoriteItem.id),
-          };
-        }),
-    [results, checkIsFavorite],
-  );
+  const markers = useMemo((): MarkerData[] => {
+    const resultMarkers = results
+      .filter((item) => item.latitude && item.longitude)
+      .map((item) => {
+        const favoriteItem = createFavoriteItemFromResult(item);
+        return {
+          position: [item.latitude!, item.longitude!] as Position,
+          popupText: item.name ?? item.address ?? "",
+          isFavorite: checkIsFavorite(favoriteItem.id),
+        };
+      });
+    if (showFavorites) {
+      const favoriteMarkers = favorites
+        .filter((fav) => fav.position)
+        .map((fav) => ({
+          position: fav.position!,
+          popupText: fav.name ?? fav.address ?? "",
+          isFavorite: true,
+        }));
+
+      return [...resultMarkers, ...favoriteMarkers];
+    }
+
+    return resultMarkers;
+  }, [results, checkIsFavorite, showFavorites, favorites]);
 
   useEffect(() => {
     setMapPosition(
@@ -334,6 +346,10 @@ export const useSearchPage = ({
     keyword,
   ]);
 
+  const handleToggleFavorites = useCallback(() => {
+    setShowFavorites((prev) => !prev);
+  }, []);
+
   return {
     form,
     results,
@@ -352,6 +368,7 @@ export const useSearchPage = ({
     currentMapCenter,
     isLoadingMore,
     highlightedCardIndex,
+    showFavorites,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
@@ -359,6 +376,7 @@ export const useSearchPage = ({
     handleToggleResults,
     handleMoreClick,
     handleMapMove,
+    handleToggleFavorites,
     setIsSearchSheetOpen,
   };
 };

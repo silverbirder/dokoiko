@@ -12,7 +12,7 @@ import {
   ChevronRight,
   Heart,
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Badge,
   Button,
@@ -41,6 +41,7 @@ import {
   SheetTitle,
   SheetTrigger,
   FavoriteButton,
+  Toggle,
 } from "@/components";
 import Image from "next/image";
 import { useSearchPage } from "./search.hook";
@@ -101,6 +102,7 @@ export const SearchPage = ({
     isLoadingMore,
     highlightedCardIndex,
     keyword,
+    showFavorites,
     handleGoogleTypesChange,
     handleYahooGenresChange,
     handleCardClick,
@@ -108,6 +110,7 @@ export const SearchPage = ({
     handleMoreClick,
     handleToggleResults,
     handleMapMove,
+    handleToggleFavorites,
     setIsSearchSheetOpen,
   } = searchPageData;
 
@@ -205,6 +208,22 @@ export const SearchPage = ({
             )}
           </Link>
         </Button>
+      </div>
+      <div className="absolute top-4 right-16 z-20">
+        <Toggle
+          pressed={showFavorites}
+          onPressedChange={handleToggleFavorites}
+          className="shadow-lg bg-background hover:bg-background/90 text-background-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground data-[state=on]:hover:bg-accent/90 h-9 w-9"
+          title={
+            showFavorites ? "お気に入り場所を非表示" : "お気に入り場所を表示"
+          }
+        >
+          <Heart
+            className={`h-4 w-4 transition-all duration-200 ${
+              showFavorites ? "fill-current" : ""
+            }`}
+          />
+        </Toggle>
       </div>
       <div className="absolute top-4 right-4 z-20">
         <Sheet open={isSearchSheetOpen} onOpenChange={setIsSearchSheetOpen}>
