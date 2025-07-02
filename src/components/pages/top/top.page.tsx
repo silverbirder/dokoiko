@@ -29,13 +29,13 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
       <div className="absolute top-4 right-4 z-20">
         <Button
           asChild
-          size="icon"
-          className="bg-background hover:bg-background/90 text-background-foreground relative shadow-lg"
+          className="bg-background hover:bg-background/90 text-background-foreground relative flex h-auto items-center gap-2 px-3 py-2 shadow-lg"
         >
-          <Link href="/favorites">
+          <Link href="/favorites" className="flex items-center gap-2">
             <Heart className="h-4 w-4" />
+            <span className="text-xs font-medium">お気に入り一覧へ</span>
             {isHydrated && favoritesCount > 0 && (
-              <span className="bg-accent text-accent-foreground absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs">
+              <span className="bg-accent text-accent-foreground flex h-5 w-5 items-center justify-center rounded-full text-xs">
                 {favoritesCount > 99 ? "99+" : favoritesCount}
               </span>
             )}

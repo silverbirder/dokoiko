@@ -193,36 +193,20 @@ export const SearchPage = ({
           </Link>
         </Button>
       </div>
-      <div className="absolute top-4 left-16 z-20">
-        <Button
-          asChild
-          size="icon"
-          className="bg-background hover:bg-background/90 text-background-foreground relative shadow-lg"
-        >
-          <Link href="/favorites">
-            <Heart className="h-4 w-4" />
-            {isHydrated && favoritesCount > 0 && (
-              <span className="bg-accent text-accent-foreground absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs">
-                {favoritesCount > 99 ? "99+" : favoritesCount}
-              </span>
-            )}
-          </Link>
-        </Button>
-      </div>
-      <div className="absolute top-4 right-16 z-20">
+      <div className="absolute top-16 right-4 z-20">
         <Toggle
           pressed={showFavorites}
           onPressedChange={handleToggleFavorites}
-          className="shadow-lg bg-background hover:bg-background/90 text-background-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground data-[state=on]:hover:bg-accent/90 h-9 w-9"
-          title={
-            showFavorites ? "お気に入り場所を非表示" : "お気に入り場所を表示"
-          }
+          className="bg-background hover:bg-background/90 text-background-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground data-[state=on]:hover:bg-accent/90 flex h-9 items-center gap-2 shadow-lg"
         >
           <Heart
             className={`h-4 w-4 transition-all duration-200 ${
               showFavorites ? "fill-current" : ""
             }`}
           />
+          <span className="text-xs font-medium whitespace-nowrap">
+            {showFavorites ? "お気に入りを表示中" : "お気に入りを表示する"}
+          </span>
         </Toggle>
       </div>
       <div className="absolute top-4 right-4 z-20">
