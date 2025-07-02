@@ -3,9 +3,11 @@
 import { Button, Input, MapCaller } from "@/components";
 import { useTopPage } from "./top.hook";
 import { Controller } from "react-hook-form";
-import { Loader2 } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
 import { useActionState } from "react";
 import type { InitialValues } from "@/types/common";
+import { useFavorites } from "@/hooks";
+import Link from "next/link";
 
 type Props = {
   onSubmit: (prevState: boolean, formData: FormData) => Promise<boolean>;
@@ -14,6 +16,7 @@ type Props = {
 
 export const TopPage = ({ onSubmit, initialValues }: Props) => {
   const [, action, pending] = useActionState(onSubmit, false);
+  const { favoritesCount, isHydrated } = useFavorites();
 
   const {
     form: { control },
@@ -23,6 +26,22 @@ export const TopPage = ({ onSubmit, initialValues }: Props) => {
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center">
+      <div className="absolute top-4 right-4 z-20">
+        <Button
+          asChild
+          size="icon"
+          className="bg-background hover:bg-background/90 text-background-foreground relative shadow-lg"
+        >
+          <Link href="/favorites">
+            <Heart className="h-4 w-4" />
+            {isHydrated && favoritesCount > 0 && (
+              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs">
+                {favoritesCount > 99 ? "99+" : favoritesCount}
+              </span>
+            )}
+          </Link>
+        </Button>
+      </div>
       <main className="relative z-10 flex w-full max-w-xl flex-col items-center gap-8 p-4">
         <div className="flex w-full flex-col items-center justify-center gap-2">
           <div className="bg-background border-primary grid h-32 w-32 grid-cols-2 rounded-lg border-2 text-4xl font-bold">

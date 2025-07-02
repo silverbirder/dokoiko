@@ -10,6 +10,7 @@ import {
   Home,
   Loader2,
   ChevronRight,
+  Heart,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -39,6 +40,7 @@ import {
   SheetFooter,
   SheetTitle,
   SheetTrigger,
+  FavoriteButton,
 } from "@/components";
 import Image from "next/image";
 import { useSearchPage } from "./search.hook";
@@ -50,6 +52,8 @@ import type {
   YahooData,
   InitialValues,
 } from "@/types/common";
+import { createFavoriteItemFromResult } from "@/lib";
+import { useFavorites } from "@/hooks";
 import Link from "next/link";
 
 type Props = {
@@ -68,6 +72,7 @@ export const SearchPage = ({
   initialValues,
 }: Props) => {
   const [, action, pending] = useActionState(onSubmit, false);
+  const { favoritesCount, isHydrated } = useFavorites();
   const searchPageData = useSearchPage({
     geocodeResult,
     yahooData,
@@ -185,6 +190,22 @@ export const SearchPage = ({
           </Link>
         </Button>
       </div>
+      <div className="absolute top-4 left-16 z-20">
+        <Button
+          asChild
+          size="icon"
+          className="bg-background hover:bg-background/90 text-background-foreground relative shadow-lg"
+        >
+          <Link href="/favorites">
+            <Heart className="h-4 w-4" />
+            {isHydrated && favoritesCount > 0 && (
+              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs">
+                {favoritesCount > 99 ? "99+" : favoritesCount}
+              </span>
+            )}
+          </Link>
+        </Button>
+      </div>
       <div className="absolute top-4 right-4 z-20">
         <Sheet open={isSearchSheetOpen} onOpenChange={setIsSearchSheetOpen}>
           <SheetTrigger asChild>
@@ -202,7 +223,7 @@ export const SearchPage = ({
                 検索したい場所とオプションを選択してください。
               </SheetDescription>
             </SheetHeader>
-            <div className="px-4 overflow-y-auto">
+            <div className="overflow-y-auto px-4">
               <form id="search-form" action={action} className="space-y-4">
                 <input
                   type="hidden"
@@ -363,8 +384,13 @@ export const SearchPage = ({
                 </div>
               </form>
             </div>
-            <SheetFooter className="px-4 py-4 border-t bg-white">
-              <Button type="submit" form="search-form" disabled={pending} className="w-full">
+            <SheetFooter className="border-t bg-white px-4 py-4">
+              <Button
+                type="submit"
+                form="search-form"
+                disabled={pending}
+                className="w-full"
+              >
                 {pending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -417,7 +443,7 @@ export const SearchPage = ({
                   <Card
                     key={index}
                     data-card-index={index}
-                    className={`inline-block max-w-[350px] min-w-[300px] cursor-pointer border-4 transition-all duration-300 hover:shadow-lg ${
+                    className={`relative inline-block max-w-[350px] min-w-[300px] cursor-pointer border-4 transition-all duration-300 hover:shadow-lg ${
                       highlightedCardIndex === index
                         ? "border-secondary"
                         : "border-primary-foreground"
@@ -426,10 +452,16 @@ export const SearchPage = ({
                       item.position && handleCardClick(item.position, index)
                     }
                   >
+                    <div className="absolute top-2 right-2 z-10">
+                      <FavoriteButton
+                        item={createFavoriteItemFromResult(item)}
+                        size="sm"
+                      />
+                    </div>
                     <CardHeader className="pb-3">
                       {item.name && (
                         <div className="overflow-x-auto overflow-y-hidden">
-                          <CardTitle className="min-w-max text-base leading-tight whitespace-nowrap">
+                          <CardTitle className="min-w-max pr-8 text-base leading-tight whitespace-nowrap">
                             {item.name}
                           </CardTitle>
                         </div>
